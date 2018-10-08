@@ -19,7 +19,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
     mainapplication.cpp \
-    src/header.cpp
+    src/header.cpp \
+    src/body.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -42,7 +43,8 @@ HEADERS += \
     ../../Comman/inlinestyle.h \
     ../url.h \
     mainapplication.h \
-    src/header.h
+    src/header.h \
+    src/body.h
 
 DISTFILES += \
     ../Release/docroot/css/css.css
