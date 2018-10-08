@@ -4,7 +4,7 @@ Header::Header::Header()
 {
     setZIndex(10);
     setHeight(100);
-    setAttributeValue(Style::style,Style::background::color::color(Style::color::Grey::DarkSlateGray));
+    setAttributeValue(Style::style,Style::background::color::rgb(51,102,153));
 
     addStyleClass(Bootstrap::Grid::container_fluid);
 
@@ -17,7 +17,7 @@ Header::Header::Header()
 
     auto navcontainer = row->addWidget(cpp14::make_unique<WContainerWidget>());
     navcontainer->addStyleClass(Bootstrap::Grid::Large::col_lg_12+Bootstrap::Grid::Medium::col_md_12+Bootstrap::Grid::Small::col_sm_12+Bootstrap::Grid::ExtraSmall::col_xs_12);
-    navcontainer->setAttributeValue(Style::style,Style::background::color::rgb(0,75,175));
+    navcontainer->setAttributeValue(Style::style,Style::background::color::rgb(51,102,153));
     navcontainer->setMargin(WLength::Auto,Side::Left|Side::Right);
     navcontainer->setContentAlignment(AlignmentFlag::Center);
 
