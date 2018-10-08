@@ -2,6 +2,7 @@
 
 Header::Header::Header()
 {
+    setZIndex(10);
     setHeight(100);
     setAttributeValue(Style::style,Style::background::color::color(Style::color::Grey::DarkSlateGray));
 
@@ -16,7 +17,7 @@ Header::Header::Header()
 
     auto navcontainer = row->addWidget(cpp14::make_unique<WContainerWidget>());
     navcontainer->addStyleClass(Bootstrap::Grid::Large::col_lg_12+Bootstrap::Grid::Medium::col_md_12+Bootstrap::Grid::Small::col_sm_12+Bootstrap::Grid::ExtraSmall::col_xs_12);
-    navcontainer->setAttributeValue(Style::style,Style::background::color::rgb(0,122,204));
+    navcontainer->setAttributeValue(Style::style,Style::background::color::rgb(0,75,175));
     navcontainer->setMargin(WLength::Auto,Side::Left|Side::Right);
     navcontainer->setContentAlignment(AlignmentFlag::Center);
 
@@ -55,9 +56,12 @@ Header::Header::Header()
         auto leftMenu = Wt::cpp14::make_unique<Wt::WMenu>();
         auto leftMenu_ = navigation->addMenu(std::move(leftMenu));
 
-        leftMenu_->addItem("Genç Fikir", Wt::cpp14::make_unique<Wt::WText>("There is no better place!"));
+        auto giris = leftMenu_->addItem("Genç Fikir", Wt::cpp14::make_unique<Wt::WText>("There is no better place!"));
+        giris->triggered().connect([&](){
+            this->_gencfikir.emit(NoClass());
+        });
         leftMenu_->addItem("Ödüller", Wt::cpp14::make_unique<Wt::WText>("Layout contents"))
-                ->setLink(Wt::WLink(Wt::LinkType::InternalPath, "/layout"));
+                ->setLink(Wt::WLink(Wt::LinkType::InternalPath, "/?_=layout"));
         leftMenu_->addItem("Yarışma Şartnamesi");
         leftMenu_->addItem("Proje Formatı");
 
@@ -66,7 +70,7 @@ Header::Header::Header()
         auto rightMenu = Wt::cpp14::make_unique<Wt::WMenu>();
         auto rightMenu_ = navigation->addMenu(std::move(rightMenu), Wt::AlignmentFlag::Right);
 
-        rightMenu_->addItem("Başvuru");
+        rightMenu_->addItem(WString::fromUTF8("Başvuru"));
     }
 
 }
@@ -74,4 +78,25 @@ Header::Header::Header()
 Header::Header::~Header()
 {
 
+}
+
+Signal<NoClass> &Header::Header::Format()
+{
+    return _Format;
+}
+
+
+Signal<NoClass> &Header::Header::SartName()
+{
+    return _SartName;
+}
+
+Signal<NoClass> &Header::Header::mOduller()
+{
+    return _mOduller;
+}
+
+Signal<NoClass> &Header::Header::gencfikir()
+{
+    return _gencfikir;
 }

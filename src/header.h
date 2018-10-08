@@ -15,7 +15,7 @@
 #include <Wt/WText.h>
 #include <Wt/WMessageBox.h>
 #include <Wt/WLineEdit.h>
-
+#include <Wt/WSignal.h>
 
 using namespace Wt;
 
@@ -27,6 +27,26 @@ class Header : public WContainerWidget
 public:
     Header();
     virtual ~Header();
+
+
+    Signal<NoClass> &gencfikir();
+
+    Signal<NoClass> &mOduller();
+
+    Signal<NoClass> &SartName();
+
+    Signal<NoClass> &Format();
+
+private:
+
+
+    Signal<NoClass> _gencfikir;
+    Signal<NoClass> _mOduller;
+    Signal<NoClass> _SartName;
+    Signal<NoClass> _Format;
+    Signal<NoClass> _Basvuru;
+
+
 };
 
 }
