@@ -6,7 +6,9 @@
 <ul>
   <li>Tamamen Açık Kaynak Kodlu</li>
   <li>C++ ve Javascript (Wt C++ FrameWork)</li>
-  <li>Özgün ve Yerli</li>
+  <li>Özgün ve Yerli Yazılım</li>
 </ul>
+
+<i>Serik Genç Fikir Serik Belediyesi Bilgi İşlem Müdürlüğü Tarafından Açık Kaynak Kodlu Olarak Değiştirilmektedir.</i>
 
 
