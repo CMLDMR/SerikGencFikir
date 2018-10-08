@@ -26,7 +26,13 @@ MainApplication::MainApplication(const WEnvironment &env)
 
     body = root()->addWidget(cpp14::make_unique<Body::Body>());
 
+
     header->gencfikir().connect(body,&Body::Body::gencFikirInit);
+
+    footer = root()->addWidget(cpp14::make_unique<Footer::Footer>());
+
+    header->setZIndex(10);
+    body->setZIndex(-10);
 
 
 }
