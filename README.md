@@ -9,7 +9,7 @@
   <li>Özgün ve Yerli Yazılım</li>
 </ul>
 
-<i>Serik Genç Fikir Serik Belediyesi Bilgi İşlem Müdürlüğü Tarafından Açık Kaynak Kodlu Olarak Değiştirilmektedir.</i>
-<i>copyRight (c) 2018</i>
+<p><i>Serik Genç Fikir Serik Belediyesi Bilgi İşlem Müdürlüğü Tarafından Açık Kaynak Kodlu Olarak Değiştirilmektedir.</i></p>
+<p><i>copyRight (c) 2018</i></p>
 
 
