@@ -10,5 +10,6 @@
 </ul>
 
 <i>Serik Genç Fikir Serik Belediyesi Bilgi İşlem Müdürlüğü Tarafından Açık Kaynak Kodlu Olarak Değiştirilmektedir.</i>
+<i>copyRight (c) 2018</i>
 
 
