@@ -8,6 +8,7 @@
 
 #include "src/header.h"
 #include "src/body.h"
+#include "src/footer.h"
 
 
 using namespace Wt;
@@ -21,6 +22,7 @@ public:
 
     Header::Header* header;
     Body::Body* body;
+    Footer::Footer* footer;
 };
 
 #endif // MAINAPPLICATION_H

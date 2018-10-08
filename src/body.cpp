@@ -7,6 +7,7 @@
 Body::Body::Body()
 {
     setContentAlignment(AlignmentFlag::Center);
+    addStyleClass("body");
     mMainContainer = addWidget(cpp14::make_unique<WContainerWidget>());
     mMainContainer->addStyleClass(Bootstrap::Grid::container_fluid);
     mMainContainer->setMaximumSize(1024,WLength::Auto);
@@ -24,6 +25,7 @@ void Body::Body::initMainPage()
     auto row = mMainContainer->addWidget(cpp14::make_unique<WContainerWidget>());
     row->addStyleClass(Bootstrap::Grid::row);
 
+
     {
         auto gencfikirLogo = row->addWidget(cpp14::make_unique<WContainerWidget>());
 
@@ -37,6 +39,8 @@ void Body::Body::initMainPage()
         logo->setAttributeValue(Style::style,Style::background::url("icon/intrologo.png")+
                                 Style::background::repeat::norepeat);
     }
+
+
 
     {
         auto gencfikirLogo = row->addWidget(cpp14::make_unique<WContainerWidget>());
@@ -55,16 +59,19 @@ void Body::Body::initMainPage()
 
     {
         auto gencfikirLogo = row->addWidget(cpp14::make_unique<WContainerWidget>());
-
+        gencfikirLogo->addStyleClass("sonbasvuruShadow");
         gencfikirLogo->addStyleClass(Bootstrap::Grid::col_full_12);
         gencfikirLogo->setContentAlignment(AlignmentFlag::Center);
-        gencfikirLogo->setAttributeValue(Style::style,Style::background::color::color(Style::color::Purple::DarkSlateBlue));
-        auto logo = gencfikirLogo->addWidget(cpp14::make_unique<WText>("Son Başvuru Tarihi: 23 Kasım 2018"));
-        logo->setAttributeValue(Style::style,Style::font::size::s24px+Style::font::weight::lighter+Style::color::color(Style::color::White::FloralWhite));
+        gencfikirLogo->setAttributeValue(Style::style,Style::background::color::rgba(255,255,255,0.75));
+        gencfikirLogo->setPadding(75,Side::Bottom|Side::Top);
 
+        auto logo = gencfikirLogo->addWidget(cpp14::make_unique<WText>("Son Başvuru Tarihi: 16 Kasım 2018"));
+        logo->setAttributeValue(Style::style,Style::font::size::s24px+Style::font::weight::lighter+Style::color::color("black"));
+        logo->setMargin(15,Side::Bottom|Side::Top);
 
         auto logolist = gencfikirLogo->addWidget(cpp14::make_unique<WContainerWidget>());
         logolist->addStyleClass(Bootstrap::Grid::container_fluid);
+        logolist->setMargin(15,Side::Bottom|Side::Top);
         auto layout = logolist->setLayout(cpp14::make_unique<WHBoxLayout>());
         layout->addStretch(1);
         const int _width = 50;
@@ -90,11 +97,18 @@ void Body::Body::initMainPage()
             logo1->setWidth(_width);
             logo1->setHeight(_height);
         }
+        {
+            auto logo1 = layout->addWidget(cpp14::make_unique<WContainerWidget>(),0,AlignmentFlag::Center);
+            logo1->setAttributeValue(Style::style,Style::background::url("icon/akdeniz.png")+
+                                     Style::background::position::center_center+Style::background::repeat::norepeat+Style::background::size::contain);
+            logo1->setWidth(_width);
+            logo1->setHeight(_height);
+        }
         layout->addStretch(1);
 
         {
-            auto explain = gencfikirLogo->addWidget(cpp14::make_unique<WText>("Bu Proje Yarışması Serik Belediyesi ve Serik ... ile Birlikte Ortaklaşa Yürütülmektedir."));
-            explain->setAttributeValue(Style::style,Style::font::size::s16px+Style::font::weight::lighter+Style::color::color(Style::color::White::FloralWhite));
+            auto explain = gencfikirLogo->addWidget(cpp14::make_unique<WText>("Bu Proje Yarışması Serik Belediyesi, Akdeniz Üniversitesi ve Akev Üniversitesi ile Birlikte Ortaklaşa Yürütülmektedir."));
+            explain->setAttributeValue(Style::style,Style::font::size::s16px+Style::font::weight::lighter+Style::color::color("black"));
         }
 
     }
