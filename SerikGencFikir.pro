@@ -1,6 +1,6 @@
 QT -= gui
 
-CONFIG += c++11 console
+CONFIG += c++14 console
 CONFIG -= app_bundle
 
 # The following define makes your compiler emit warnings if you use
@@ -21,3 +21,11 @@ SOURCES += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+
+
+
+win32: LIBS += -L$$PWD/Wt-4.0.4-msvs2015-Windows-x64-SDK/lib/ -lwt -lwthttp
+
+INCLUDEPATH += $$PWD/Wt-4.0.4-msvs2015-Windows-x64-SDK/include
+DEPENDPATH += $$PWD/Wt-4.0.4-msvs2015-Windows-x64-SDK/include
