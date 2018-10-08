@@ -2,7 +2,6 @@
 
 #include "inlinestyle.h"
 
-#include "src/header.h"
 
 
 MainApplication::MainApplication(const WEnvironment &env)
@@ -22,7 +21,12 @@ MainApplication::MainApplication(const WEnvironment &env)
     WApplication::instance()->addMetaHeader("viewport","width=device-width, initial-scale=1.0");
     this->useStyleSheet("css/css.css");
 
-    auto header = root()->addWidget(cpp14::make_unique<Header::Header>());
+    header = root()->addWidget(cpp14::make_unique<Header::Header>());
     header->addStyleClass("headerShadow");
+
+    body = root()->addWidget(cpp14::make_unique<Body::Body>());
+
+    header->gencfikir().connect(body,&Body::Body::gencFikirInit);
+
 
 }
