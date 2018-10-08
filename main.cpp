@@ -1,9 +1,22 @@
-#include <QtCore/QCoreApplication>
-#include <QtCore/qglobal.h>
+
+#include "mainapplication.h"
+
+
+
+
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication a(argc, argv);
 
-    return a.exec();
+
+
+
+    return Wt::WRun(argc, argv, [](const Wt::WEnvironment &env) {
+      /*
+       * You could read information from the environment to decide whether
+       * the user has permission to start a new application
+       */
+      return Wt::cpp14::make_unique<MainApplication>(env);
+    });
+
 }
