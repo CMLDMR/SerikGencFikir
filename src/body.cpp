@@ -120,10 +120,84 @@ void Body::Body::gencFikirInit()
     mMainContainer->clear();
 
     auto  row = mMainContainer->addWidget(cpp14::make_unique<WContainerWidget>());
+    row->addStyleClass(Bootstrap::Grid::row);
+
+    {
+        auto container = row->addWidget(cpp14::make_unique<WContainerWidget>());
+        container->setMargin(50,Side::Bottom|Side::Top);
+        container->addStyleClass(Bootstrap::Grid::col_full_12);
+        auto text = container->addWidget(cpp14::make_unique<WText>("\"Serik Genç Fikir 2018 Üniversite\" Yarışması Nedir?"));
+        text->setAttributeValue(Style::style,Style::font::size::s28px+Style::color::color(Style::color::White::AliceBlue));
+    }
+
+    {
+        auto container = row->addWidget(cpp14::make_unique<WContainerWidget>());
+        container->setMargin(25,Side::Bottom|Side::Top);
+        container->addStyleClass(Bootstrap::Grid::col_full_12);
+        auto text = container->addWidget(cpp14::make_unique<WText>("Üniversite Öğrencilerinin Katılabileceği <b><i>sosyal sorumluluk proje fikirleri</i></b> yarışmasıdır.",TextFormat::UnsafeXHTML));
+        text->setAttributeValue(Style::style,Style::color::color(Style::color::White::AliceBlue));
+    }
+
+    {
+        auto container = row->addWidget(cpp14::make_unique<WContainerWidget>());
+        container->setMargin(25,Side::Bottom|Side::Top);
+        container->addStyleClass(Bootstrap::Grid::col_full_12);
+        auto text = container->addWidget(cpp14::make_unique<WText>("Amaç"));
+        text->setAttributeValue(Style::style,Style::font::size::s24px+Style::color::color(Style::color::White::AliceBlue));
+    }
+
+    {
+        auto container = row->addWidget(cpp14::make_unique<WContainerWidget>());
+        container->setMargin(25,Side::Bottom|Side::Top);
+        container->addStyleClass(Bootstrap::Grid::col_full_12);
+        auto text = container->addWidget(cpp14::make_unique<WText>("Yarışmanın amacı; lise öğrencilerinin sosyal sorumluluk konusunda bilinçlenmelerini, düşünmelerini ve harekete geçmelerini sağlamak, sosyal sorumluluk konusundaki vizyonlarını genişletip öğrencileri motive ederek başarıyı ödüllendirmektir",TextFormat::UnsafeXHTML));
+        text->setAttributeValue(Style::style,Style::color::color(Style::color::White::AliceBlue));
+    }
+
+    {
+        auto container = row->addWidget(cpp14::make_unique<WContainerWidget>());
+        container->setMargin(25,Side::Top);
+        container->setMargin(200,Side::Bottom);
+        container->addStyleClass(Bootstrap::Grid::col_full_12);
+
+        auto layout = container->setLayout(cpp14::make_unique<WHBoxLayout>());
+
+        layout->addStretch(1);
+        {
+            auto img = layout->addWidget(cpp14::make_unique<WContainerWidget>());
+            img->setWidth(75);
+            img->setHeight(75);
+            img->setAttributeValue(Style::style,Style::background::url("icon/icons/1.jpeg")+Style::background::repeat::norepeat+Style::background::size::contain);
+        }
+        {
+            auto img = layout->addWidget(cpp14::make_unique<WContainerWidget>());
+            img->setWidth(75);
+            img->setHeight(75);
+            img->setAttributeValue(Style::style,Style::background::url("icon/icons/2.jpeg")+Style::background::repeat::norepeat+Style::background::size::contain);
+        }
+        {
+            auto img = layout->addWidget(cpp14::make_unique<WContainerWidget>());
+            img->setWidth(75);
+            img->setHeight(75);
+            img->setAttributeValue(Style::style,Style::background::url("icon/icons/3.jpeg")+Style::background::repeat::norepeat+Style::background::size::contain);
+        }
+        {
+            auto img = layout->addWidget(cpp14::make_unique<WContainerWidget>());
+            img->setWidth(75);
+            img->setHeight(75);
+            img->setAttributeValue(Style::style,Style::background::url("icon/icons/4.jpeg")+Style::background::repeat::norepeat+Style::background::size::contain);
+        }
+        {
+            auto img = layout->addWidget(cpp14::make_unique<WContainerWidget>());
+            img->setWidth(75);
+            img->setHeight(75);
+            img->setAttributeValue(Style::style,Style::background::url("icon/icons/5.jpeg")+Style::background::repeat::norepeat+Style::background::size::contain);
+        }
+        layout->addStretch(1);
 
 
-    auto title = row->addWidget(cpp14::make_unique<WText>("GEnç Fikir Nedir?"));
 
+    }
 
 
 }
