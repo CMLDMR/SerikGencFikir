@@ -201,3 +201,13 @@ void Body::Body::gencFikirInit()
 
 
 }
+
+void Body::Body::BasvuruInit()
+{
+
+    mMainContainer->clear();
+
+
+    mMainContainer->addWidget(cpp14::make_unique<WText>("Başvuru Alanı"));
+
+}

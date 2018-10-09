@@ -20,6 +20,8 @@ public:
 
     void gencFikirInit();
 
+    void BasvuruInit();
+
 
 private:
     WContainerWidget* mMainContainer;
