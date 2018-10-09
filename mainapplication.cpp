@@ -29,6 +29,8 @@ MainApplication::MainApplication(const WEnvironment &env)
 
     header->gencfikir().connect(body,&Body::Body::gencFikirInit);
 
+    header->Basvuru().connect(body,&Body::Body::BasvuruInit);
+
     footer = root()->addWidget(cpp14::make_unique<Footer::Footer>());
 
     header->setZIndex(10);
