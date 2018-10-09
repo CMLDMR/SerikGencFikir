@@ -20,7 +20,8 @@ SOURCES += \
         main.cpp \
     mainapplication.cpp \
     src/header.cpp \
-    src/body.cpp
+    src/body.cpp \
+    src/footer.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -44,7 +45,8 @@ HEADERS += \
     ../url.h \
     mainapplication.h \
     src/header.h \
-    src/body.h
+    src/body.h \
+    src/footer.h
 
 DISTFILES += \
     ../Release/docroot/css/css.css
