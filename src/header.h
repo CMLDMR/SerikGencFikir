@@ -37,6 +37,8 @@ public:
 
     Signal<NoClass> &Format();
 
+    Signal<NoClass> &Basvuru();
+
 private:
 
 

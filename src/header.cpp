@@ -70,7 +70,10 @@ Header::Header::Header()
         auto rightMenu = Wt::cpp14::make_unique<Wt::WMenu>();
         auto rightMenu_ = navigation->addMenu(std::move(rightMenu), Wt::AlignmentFlag::Right);
 
-        rightMenu_->addItem(WString::fromUTF8("Başvuru"));
+        auto basvuruitem = rightMenu_->addItem(WString::fromUTF8("Başvuru"));
+        basvuruitem->clicked().connect([&](){
+            _Basvuru.emit(NoClass());
+        });
     }
 
 }
@@ -83,6 +86,11 @@ Header::Header::~Header()
 Signal<NoClass> &Header::Header::Format()
 {
     return _Format;
+}
+
+Signal<NoClass> &Header::Header::Basvuru()
+{
+    return  _Basvuru;
 }
 
 
