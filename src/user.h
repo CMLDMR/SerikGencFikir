@@ -4,6 +4,16 @@
 #include <string.h>
 #include <iostream>
 
+
+#include <bsoncxx/builder/basic/array.hpp>
+#include <bsoncxx/builder/basic/document.hpp>
+#include <bsoncxx/builder/basic/kvp.hpp>
+#include <bsoncxx/exception/exception.hpp>
+#include <bsoncxx/types/value.hpp>
+#include <bsoncxx/types.hpp>
+
+
+
 using namespace std;
 class User
 {
@@ -31,6 +41,8 @@ public:
     std::string getUniversite() const;
     void setUniversite(const std::string &value);
 
+
+
 private:
     std::string adsoyad;
     std::string ceptel;
@@ -38,6 +50,9 @@ private:
     std::string addres;
     std::string tcno;
     std::string password;
+
+
+
 };
 
 

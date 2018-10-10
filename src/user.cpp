@@ -101,3 +101,4 @@ void User::setUniversite(const std::string &value)
 {
     universite = value;
 }
+
