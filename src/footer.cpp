@@ -30,7 +30,7 @@ void Footer::Footer::initFooter()
     row->setMargin(25,Side::Bottom|Side::Top);
 
     {
-        auto text = row->addWidget(cpp14::make_unique<WText>("Bu Web Sitesi Serik Belediyesi Bilgi İşlem Müdürlüğü Tarafından Açık Kaynak Kodlu Olarak Geliştirilmektedir."));
+        auto text = row->addWidget(cpp14::make_unique<WText>("ŞŞBu Web Sitesi Serik Belediyesi Bilgi İşlem Müdürlüğü Tarafından Açık Kaynak Kodlu Olarak Geliştirilmektedir."));
         text->addStyleClass(Bootstrap::Grid::col_full_12);
         text->setAttributeValue(Style::style,Style::color::color(Style::color::White::AliceBlue)+Style::font::size::s12px+Style::font::weight::lighter);
     }

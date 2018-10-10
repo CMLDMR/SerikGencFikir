@@ -3,6 +3,10 @@
 #include <Wt/WVBoxLayout.h>
 #include <Wt/WHBoxLayout.h>
 
+#include "loginwidget.h"
+#include "lloginwidget.h"
+
+
 
 Body::Body::Body()
 {
@@ -207,7 +211,6 @@ void Body::Body::BasvuruInit()
 
     mMainContainer->clear();
 
-
-    mMainContainer->addWidget(cpp14::make_unique<WText>("Başvuru Alanı"));
+    mMainContainer->addWidget(cpp14::make_unique<LLoginWidget>());
 
 }

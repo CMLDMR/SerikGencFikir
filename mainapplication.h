@@ -11,6 +11,9 @@
 #include "src/footer.h"
 
 
+#include "mongocxx/client.hpp"
+
+
 using namespace Wt;
 
 class MainApplication : public WApplication
@@ -23,6 +26,10 @@ public:
     Header::Header* header;
     Body::Body* body;
     Footer::Footer* footer;
+
+
+    mongocxx::client* mClient;
+    mongocxx::database* db;
 };
 
 #endif // MAINAPPLICATION_H

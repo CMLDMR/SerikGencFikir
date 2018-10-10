@@ -2,11 +2,30 @@
 
 #include "inlinestyle.h"
 
+#include "../url.h"
+
+#include "mongocxx/exception/authentication_exception.hpp"
+
 
 
 MainApplication::MainApplication(const WEnvironment &env)
     :WApplication(env)
 {
+
+    try {
+        mClient = new mongocxx::client(mongocxx::uri(_url));
+    } catch (mongocxx::exception &e) {
+        std::cout << "Connection Error: " << e.what() << std::endl;
+    }
+
+    if( mClient->operator bool() )
+    {
+        std::cout << "Connected Successfully" << std::endl;
+    }else{
+        std::cout << "Connection is Lost" << std::endl;
+    }
+
+
 
     root()->setMargin(0,AllSides);
 

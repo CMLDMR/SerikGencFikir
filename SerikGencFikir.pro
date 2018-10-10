@@ -22,7 +22,8 @@ SOURCES += \
     src/header.cpp \
     src/body.cpp \
     src/footer.cpp \
-    src/loginwidget.cpp
+    src/loginwidget.cpp \
+    src/lloginwidget.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -48,8 +49,34 @@ HEADERS += \
     src/header.h \
     src/body.h \
     src/footer.h \
-    src/loginwidget.h
+    src/loginwidget.h \
+    src/lloginwidget.h \
+    ../url.h
 
 DISTFILES += \
     ../Release/docroot/css/css.css
 
+
+
+
+
+
+
+win32: LIBS += -L$$PWD/mongo/lib/ -lbsoncxx -lmongocxx
+
+INCLUDEPATH += $$PWD/mongo/include/mongocxx/v_noabi
+DEPENDPATH += $$PWD/mongo/include/mongocxx/v_noabi
+
+INCLUDEPATH += $$PWD/mongo/include/bsoncxx/v_noabi
+DEPENDPATH += $$PWD/mongo/include/bsoncxx/v_noabi
+
+
+
+
+
+
+
+win32: LIBS += -L$$PWD/../../Boost/boost/lib64-msvc-14.0/ -lboost_atomic-vc140-mt-1_65_1
+
+INCLUDEPATH += $$PWD/../../Boost/boost/
+DEPENDPATH += $$PWD/../../Boost/boost/

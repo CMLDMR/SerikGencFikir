@@ -1,6 +1,6 @@
 
 #include "mainapplication.h"
-
+#include "mongocxx/instance.hpp"
 
 
 
@@ -9,6 +9,8 @@ int main(int argc, char *argv[])
 {
 
 
+
+    mongocxx::instance();
 
 
     return Wt::WRun(argc, argv, [](const Wt::WEnvironment &env) {
