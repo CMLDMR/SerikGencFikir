@@ -46,6 +46,8 @@ MainApplication::MainApplication(const WEnvironment &env)
     }
 
 
+    db = mClient->database(_dbname);
+
 
     root()->setMargin(0,AllSides);
 
@@ -63,7 +65,7 @@ MainApplication::MainApplication(const WEnvironment &env)
     header = root()->addWidget(cpp14::make_unique<Header::Header>());
     header->addStyleClass("headerShadow");
 
-    body = root()->addWidget(cpp14::make_unique<Body::Body>());
+    body = root()->addWidget(cpp14::make_unique<Body::Body>(&db));
 
 
     header->gencfikir().connect(body,&Body::Body::gencFikirInit);
