@@ -3,19 +3,22 @@
 
 #include <Wt/WContainerWidget.h>
 #include <Wt/WText.h>
-#include "bootstrap.h"
-#include "inlinestyle.h"
+
+
+
 
 
 #include <Wt/WLineEdit.h>
+#include <Wt/WComboBox.h>
 
+#include "baseclass.h"
 
 using namespace Wt;
 
-class LLoginWidget : public Wt::WContainerWidget
+class LLoginWidget : public BaseWidget
 {
 public:
-    LLoginWidget();
+    LLoginWidget(mongocxx::database* _db);
 
     ~LLoginWidget(){}
 
@@ -32,10 +35,24 @@ public:
 
 
 
-class LYeniUye : public WContainerWidget
+class LYeniUye : public BaseWidget
 {
 public:
-    LYeniUye();
+    LYeniUye(mongocxx::database* _db);
+
+private:
+    WContainerWidget* mRow;
+
+    void sendVericationCode();
+
+    std::string verificationCode;
+
+    WPushButton* mKaydet;
+    WLineEdit* mCepTel;
+    WLineEdit* mAdres;
+    WLineEdit* mTCNO;
+    WLineEdit* mAdSoyad;
+    WComboBox* mUniversite;
 };
 
 
