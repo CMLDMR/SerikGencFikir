@@ -1,5 +1,5 @@
 QT -= gui
-QT += core
+QT += core xml
 
 CONFIG += c++14 console
 CONFIG -= app_bundle
