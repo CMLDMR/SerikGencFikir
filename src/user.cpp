@@ -1,7 +1,9 @@
 #include "user.h"
 
 User::User()
+    :userDoc(document{})
 {
+    userDoc.clear();
 
 }
 
@@ -90,6 +92,62 @@ bool User::isValid() const
         valid = false;
     }
     return valid;
+}
+
+bsoncxx::builder::basic::document User::getDocument()
+{
+    auto doc = document{};
+
+
+    try {
+        doc.append(kvp(adsoyadkey,this->getAdsoyad()));
+    } catch (bsoncxx::exception &e) {
+        std::cout << "adsoyadkey: " << e.what() << std::endl;
+    }
+
+    try {
+        doc.append(kvp(ceptelkey,this->getCeptel()));
+    } catch (bsoncxx::exception &e) {
+        std::cout << "ceptelkey: " << e.what() << std::endl;
+    }
+
+    try {
+        doc.append(kvp(universitekey,this->getUniversite()));
+    } catch (bsoncxx::exception &e) {
+        std::cout << "universitekey: " << e.what() << std::endl;
+    }
+
+    try {
+        doc.append(kvp(addreskey,this->getAddres()));
+    } catch (bsoncxx::exception &e) {
+        std::cout << "addreskey: " << e.what() << std::endl;
+    }
+
+    try {
+        doc.append(kvp(tcnokey,this->getCeptel()));
+    } catch (bsoncxx::exception &e) {
+        std::cout << "tcnokey: " << e.what() << std::endl;
+    }
+
+    try {
+        doc.append(kvp(passwordkey,this->getPassword()));
+    } catch (bsoncxx::exception &e) {
+        std::cout << "passwordkey: " << e.what() << std::endl;
+    }
+    return doc;
+}
+
+bool User::setDocument(const bsoncxx::builder::basic::document &userDocument)
+{
+    userDoc.clear();
+
+    try {
+        userDoc.append(userDocument.view());
+    } catch (bsoncxx::exception &e) {
+        std::cout << "Error User Document Set: " << e.what() << std::endl;
+        return false;
+    }
+    return true;
 }
 
 std::string User::getUniversite() const

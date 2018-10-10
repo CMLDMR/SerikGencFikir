@@ -11,10 +11,22 @@
 #include <bsoncxx/exception/exception.hpp>
 #include <bsoncxx/types/value.hpp>
 #include <bsoncxx/types.hpp>
+#include "bsoncxx/document/element.hpp"
+#include "bsoncxx/document/value.hpp"
+#include "bsoncxx/document/view.hpp"
+#include "bsoncxx/document/view_or_value.hpp"
 
 
+using bsoncxx::builder::basic::document;
+using bsoncxx::builder::basic::array;
+using bsoncxx::builder::basic::kvp;
+
+using bsoncxx::builder::basic::make_array;
+using bsoncxx::builder::basic::make_document;
 
 using namespace std;
+
+
 class User
 {
 public:
@@ -38,8 +50,26 @@ public:
 
     bool isValid() const;
 
+    document getDocument();
+    bool setDocument(const document& userDocument);
+
     std::string getUniversite() const;
     void setUniversite(const std::string &value);
+
+
+
+
+public:
+
+
+    const std::string collection{"users"};
+
+    const std::string adsoyadkey{"adsoyad"};
+    const std::string ceptelkey{"ceptelkey"};
+    const std::string universitekey{"universitekey"};
+    const std::string addreskey{"addreskey"};
+    const std::string tcnokey{"tcnokey"};
+    const std::string passwordkey{"passwordkey"};
 
 
 
@@ -50,6 +80,11 @@ private:
     std::string addres;
     std::string tcno;
     std::string password;
+
+
+    document userDoc;
+
+
 
 
 
