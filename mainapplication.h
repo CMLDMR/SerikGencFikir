@@ -29,7 +29,7 @@ public:
 
 
     mongocxx::client* mClient;
-    mongocxx::database* db;
+    mongocxx::database db;
 };
 
 #endif // MAINAPPLICATION_H

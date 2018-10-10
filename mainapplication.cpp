@@ -6,6 +6,22 @@
 
 #include "mongocxx/exception/authentication_exception.hpp"
 
+#include "bsoncxx/builder/basic/document.hpp"
+#include "bsoncxx/builder/basic/kvp.hpp"
+#include "bsoncxx/builder/basic/array.hpp"
+#include "bsoncxx/oid.hpp"
+#include "bsoncxx/document/element.hpp"
+#include "bsoncxx/array/element.hpp"
+#include "bsoncxx/types.hpp"
+#include "bsoncxx/json.hpp"
+#include "bsoncxx/exception/exception.hpp"
+
+
+
+
+
+
+
 
 
 MainApplication::MainApplication(const WEnvironment &env)
@@ -16,6 +32,8 @@ MainApplication::MainApplication(const WEnvironment &env)
         mClient = new mongocxx::client(mongocxx::uri(_url));
     } catch (mongocxx::exception &e) {
         std::cout << "Connection Error: " << e.what() << std::endl;
+        root()->addWidget(cpp14::make_unique<WText>("Uygulama Geçici Olarak Durduruldu."));
+        return;
     }
 
     if( mClient->operator bool() )
@@ -23,6 +41,8 @@ MainApplication::MainApplication(const WEnvironment &env)
         std::cout << "Connected Successfully" << std::endl;
     }else{
         std::cout << "Connection is Lost" << std::endl;
+        root()->addWidget(cpp14::make_unique<WText>("Uygulama Geçici Olarak Durduruldu."));
+        return;
     }
 
 
