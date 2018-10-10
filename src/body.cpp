@@ -8,7 +8,8 @@
 
 
 
-Body::Body::Body()
+Body::Body::Body(mongocxx::database *_db)
+    :BaseWidget(_db)
 {
     setContentAlignment(AlignmentFlag::Center);
     addStyleClass("body");
@@ -211,6 +212,6 @@ void Body::Body::BasvuruInit()
 
     mMainContainer->clear();
 
-    mMainContainer->addWidget(cpp14::make_unique<LLoginWidget>());
+    mMainContainer->addWidget(cpp14::make_unique<LLoginWidget>(this->getDb()));
 
 }

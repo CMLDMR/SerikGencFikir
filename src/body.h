@@ -1,22 +1,16 @@
 #ifndef BODY_H
 #define BODY_H
 
-#include <Wt/WContainerWidget.h>
-
-#include "inlinestyle.h"
-#include "bootstrap.h"
-
-using namespace Wt;
-
+#include "baseclass.h"
 
 namespace Body {
 
 
 
-class Body : public WContainerWidget
+class Body : public BaseWidget
 {
 public:
-    Body();
+    Body(mongocxx::database* _db);
 
     void initMainPage();
 
@@ -27,6 +21,7 @@ public:
 
 private:
     WContainerWidget* mMainContainer;
+
 };
 }
 
