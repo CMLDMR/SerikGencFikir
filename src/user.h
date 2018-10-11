@@ -31,6 +31,7 @@ class User
 {
 public:
     User();
+    User(const User& user);
 
     std::string getAdsoyad() const;
     void setAdsoyad(const std::string &value);
@@ -51,7 +52,7 @@ public:
     bool isValid() const;
 
     document getDocument();
-    bool setDocument(const document& userDocument);
+    void setDocument(const document& userDocument);
 
     std::string getUniversite() const;
     void setUniversite(const std::string &value);
@@ -62,7 +63,7 @@ public:
 public:
 
 
-    const std::string collection{"users"};
+    const std::string collection{"Users"};
 
     const std::string adsoyadkey{"adsoyad"};
     const std::string ceptelkey{"ceptelkey"};

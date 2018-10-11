@@ -7,6 +7,18 @@ User::User()
 
 }
 
+User::User(const User &user)
+{
+
+    this->setAddres(user.getAddres());
+    this->setAdsoyad(user.getAdsoyad());
+    this->setCeptel(user.getCeptel());
+    this->setPassword(user.getPassword());
+    this->setTcno(user.getTcno());
+    this->setUniversite(user.getUniversite());
+
+}
+
 std::string User::getAdsoyad() const
 {
     return adsoyad;
@@ -137,17 +149,16 @@ bsoncxx::builder::basic::document User::getDocument()
     return doc;
 }
 
-bool User::setDocument(const bsoncxx::builder::basic::document &userDocument)
+void User::setDocument(const bsoncxx::builder::basic::document &userDocument)
 {
+
     userDoc.clear();
 
-    try {
-        userDoc.append(userDocument.view());
-    } catch (bsoncxx::exception &e) {
-        std::cout << "Error User Document Set: " << e.what() << std::endl;
-        return false;
+    for( auto element : userDocument.view() )
+    {
+        userDoc.append(kvp(element.key(),element.get_value()));
     }
-    return true;
+
 }
 
 std::string User::getUniversite() const
