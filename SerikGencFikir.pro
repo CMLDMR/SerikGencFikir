@@ -23,10 +23,11 @@ SOURCES += \
     src/header.cpp \
     src/body.cpp \
     src/footer.cpp \
-    src/loginwidget.cpp \
     src/lloginwidget.cpp \
     src/user.cpp \
-    src/baseclass.cpp
+    src/baseclass.cpp \
+    src/userwidget.cpp \
+    src/project.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -52,11 +53,12 @@ HEADERS += \
     src/header.h \
     src/body.h \
     src/footer.h \
-    src/loginwidget.h \
     src/lloginwidget.h \
     ../url.h \
     src/user.h \
-    src/baseclass.h
+    src/baseclass.h \
+    src/userwidget.h \
+    src/project.h
 
 DISTFILES += \
     ../Release/docroot/css/css.css \

@@ -16,7 +16,55 @@ User::User(const User &user)
     this->setPassword(user.getPassword());
     this->setTcno(user.getTcno());
     this->setUniversite(user.getUniversite());
+    this->setFotoid(user.getFotoid());
 
+}
+
+User::User(const User *user)
+{
+    this->setAddres(user->getAddres());
+    this->setAdsoyad(user->getAdsoyad());
+    this->setCeptel(user->getCeptel());
+    this->setPassword(user->getPassword());
+    this->setTcno(user->getTcno());
+    this->setUniversite(user->getUniversite());
+    this->setFotoid(user->getFotoid());
+}
+
+User::User(bsoncxx::document::view userView)
+{
+    this->setAddres(userView["addreskey"].get_utf8().value.to_string());
+    this->setAdsoyad(userView["adsoyad"].get_utf8().value.to_string());
+    this->setCeptel(userView["ceptelkey"].get_utf8().value.to_string());
+    this->setPassword(userView["passwordkey"].get_utf8().value.to_string());
+    this->setTcno(userView["tcnokey"].get_utf8().value.to_string());
+    this->setUniversite(userView["universitekey"].get_utf8().value.to_string());
+    try {
+        this->setFotoid(userView["foto"].get_oid().value.to_string());
+    } catch (bsoncxx::exception &e) {
+        std::cout << "Foto Exract Error: " << e.what() << std::endl;
+    }
+}
+
+void User::setFromView(bsoncxx::document::view userView)
+{
+    this->setAddres(userView["addreskey"].get_utf8().value.to_string());
+    this->setAdsoyad(userView["adsoyad"].get_utf8().value.to_string());
+    this->setCeptel(userView["ceptelkey"].get_utf8().value.to_string());
+    this->setPassword(userView["passwordkey"].get_utf8().value.to_string());
+    this->setTcno(userView["tcnokey"].get_utf8().value.to_string());
+    this->setUniversite(userView["universitekey"].get_utf8().value.to_string());
+
+    try {
+        this->setFotoid(userView["foto"].get_oid().value.to_string());
+    } catch (bsoncxx::exception &e) {
+        std::cout << "Foto Exract View Error: " << e.what() << std::endl;
+    }
+}
+
+User User::getUser() const
+{
+    return *this;
 }
 
 std::string User::getAdsoyad() const
@@ -169,5 +217,20 @@ std::string User::getUniversite() const
 void User::setUniversite(const std::string &value)
 {
     universite = value;
+}
+
+bsoncxx::oid User::getFotoOid() const
+{
+    return bsoncxx::oid(this->getFotoid());
+}
+
+std::string User::getFotoid() const
+{
+    return fotoid;
+}
+
+void User::setFotoid(const std::string &value)
+{
+    fotoid = value;
 }
 

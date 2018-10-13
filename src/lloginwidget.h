@@ -27,9 +27,17 @@ public:
 
     void inityeniUye();
 
+    void Login();
 
     WContainerWidget* mMainContainer,*row;
     WLineEdit* mTel;
+    WLineEdit* mSifre;
+
+
+    Signal<bsoncxx::document::view> &Logined();
+
+private:
+    Signal<bsoncxx::document::view> _Logined;
 };
 
 
@@ -39,6 +47,8 @@ class LYeniUye : public BaseWidget
 {
 public:
     LYeniUye(mongocxx::database* _db);
+
+    Signal<NoClass> &LoginSuccess();
 
 private:
     WContainerWidget* mRow;
@@ -53,6 +63,14 @@ private:
     WLineEdit* mTCNO;
     WLineEdit* mAdSoyad;
     WComboBox* mUniversite;
+    WLineEdit* mSifre;
+
+    WLineEdit* mDogrulamaKodu;
+
+//    WLineEdit* dogrulamaKodu;
+    void SaveNewUser();
+
+    Signal<NoClass> _LoginSuccess;
 };
 
 

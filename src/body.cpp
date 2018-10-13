@@ -3,8 +3,9 @@
 #include <Wt/WVBoxLayout.h>
 #include <Wt/WHBoxLayout.h>
 
-#include "loginwidget.h"
 #include "lloginwidget.h"
+
+#include "userwidget.h"
 
 
 
@@ -16,7 +17,7 @@ Body::Body::Body(mongocxx::database *_db)
     mMainContainer = addWidget(cpp14::make_unique<WContainerWidget>());
     mMainContainer->addStyleClass(Bootstrap::Grid::container_fluid);
     mMainContainer->setMaximumSize(1024,WLength::Auto);
-
+    _Logined = false;
 
 
     this->initMainPage();
@@ -210,8 +211,32 @@ void Body::Body::gencFikirInit()
 void Body::Body::BasvuruInit()
 {
 
+    if( _Logined )
+    {
+        this->initUserWidget(userInfo.getDocument().view());
+    }else{
+        mMainContainer->clear();
+
+        auto container = mMainContainer->addWidget(cpp14::make_unique<LLoginWidget>(this->getDb()));
+
+        container->Logined().connect(this,&Body::Body::initUserWidget);
+    }
+
+
+}
+
+void Body::Body::initUserWidget(bsoncxx::document::view userView)
+{
+
+    _Logined = true;
     mMainContainer->clear();
 
-    mMainContainer->addWidget(cpp14::make_unique<LLoginWidget>(this->getDb()));
+    this->userInfo.setFromView(userView);
+
+    auto row = mMainContainer->addWidget(cpp14::make_unique<WContainerWidget>());
+    row->addStyleClass(Bootstrap::Grid::row);
+
+    auto container = row->addWidget(cpp14::make_unique<UserWidget>(this->getDb(),userView));
+    container->addStyleClass(Bootstrap::Grid::col_full_12);
 
 }

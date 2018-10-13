@@ -15,6 +15,7 @@
 #include "bsoncxx/document/value.hpp"
 #include "bsoncxx/document/view.hpp"
 #include "bsoncxx/document/view_or_value.hpp"
+#include "bsoncxx/json.hpp"
 
 
 using bsoncxx::builder::basic::document;
@@ -32,6 +33,12 @@ class User
 public:
     User();
     User(const User& user);
+    User(const User* user);
+    User(bsoncxx::document::view userView);
+
+    void setFromView(bsoncxx::document::view userView);
+
+    User getUser() const;
 
     std::string getAdsoyad() const;
     void setAdsoyad(const std::string &value);
@@ -57,6 +64,8 @@ public:
     std::string getUniversite() const;
     void setUniversite(const std::string &value);
 
+    bsoncxx::oid getFotoOid() const;
+
 
 
 
@@ -74,6 +83,9 @@ public:
 
 
 
+    std::string getFotoid() const;
+    void setFotoid(const std::string &value);
+
 private:
     std::string adsoyad;
     std::string ceptel;
@@ -81,6 +93,7 @@ private:
     std::string addres;
     std::string tcno;
     std::string password;
+    std::string fotoid;
 
 
     document userDoc;

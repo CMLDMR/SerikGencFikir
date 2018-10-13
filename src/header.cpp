@@ -36,6 +36,7 @@ Header::Header::Header()
         logoCOntainer->setAttributeValue(Style::style,Style::background::color::color(Style::color::Purple::BlueViolet));
         logoCOntainer->setHeight(100);
         logoCOntainer->setAttributeValue(Style::style,Style::background::url("icon/logo.png")+Style::background::position::center_center+Style::background::repeat::norepeat+Style::background::size::contain);
+        logoCOntainer->setZIndex(105);
     }
 
 

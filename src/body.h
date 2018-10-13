@@ -2,6 +2,7 @@
 #define BODY_H
 
 #include "baseclass.h"
+#include "user.h"
 
 namespace Body {
 
@@ -19,8 +20,15 @@ public:
     void BasvuruInit();
 
 
+    void initUserWidget(bsoncxx::document::view view);
+
+
 private:
     WContainerWidget* mMainContainer;
+
+
+    bool _Logined;
+    User userInfo;
 
 };
 }
