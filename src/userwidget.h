@@ -19,6 +19,8 @@ public:
 
     void initContent();
 
+    Signal<NoClass> &LogOut();
+
 private:
     WContainerWidget* mMainContainer, *mRow;
 
@@ -26,6 +28,8 @@ private:
     WContainerWidget* contentContainer;
 
     Project* mProject;
+
+    Signal<NoClass> _logOut;
 
 };
 

@@ -217,6 +217,18 @@ void UserWidget::initInfo()
         auto text = container->addWidget(cpp14::make_unique<WText>(this->getUniversite()));
         text->setAttributeValue(Style::style,Style::font::size::s14px+Style::color::color(Style::color::White::AliceBlue)+Style::font::weight::bold);
     }
+
+    {
+        auto container = rContainer->addWidget(cpp14::make_unique<WContainerWidget>());
+        container->setMargin(15,Side::Top|Side::Bottom);
+        container->addStyleClass( Bootstrap::Grid::col_full_12 );
+        auto logoutBtn = container->addWidget(cpp14::make_unique<WPushButton>("Çıkış Yap"));
+        logoutBtn->addStyleClass(Bootstrap::Button::Warning);
+        logoutBtn->clicked().connect([=](){
+            this->_logOut.emit(NoClass());
+        });
+    }
+
 }
 
 void UserWidget::initContent()
@@ -226,5 +238,10 @@ void UserWidget::initContent()
 
     mProject = contentContainer->addWidget(cpp14::make_unique<Project>(this->getDb(),this->getUser()));
 
+}
+
+Signal<NoClass> &UserWidget::LogOut()
+{
+    return _logOut;
 }
 
