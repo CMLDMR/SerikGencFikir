@@ -221,22 +221,28 @@ void Body::Body::BasvuruInit()
 
         container->Logined().connect(this,&Body::Body::initUserWidget);
     }
-
-
 }
 
 void Body::Body::initUserWidget(bsoncxx::document::view userView)
 {
 
     _Logined = true;
+
     mMainContainer->clear();
 
     this->userInfo.setFromView(userView);
+
+
 
     auto row = mMainContainer->addWidget(cpp14::make_unique<WContainerWidget>());
     row->addStyleClass(Bootstrap::Grid::row);
 
     auto container = row->addWidget(cpp14::make_unique<UserWidget>(this->getDb(),userView));
     container->addStyleClass(Bootstrap::Grid::col_full_12);
+
+    container->LogOut().connect([=](){
+        _Logined = false;
+        this->BasvuruInit();
+    });
 
 }
