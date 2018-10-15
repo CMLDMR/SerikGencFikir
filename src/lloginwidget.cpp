@@ -422,7 +422,8 @@ void LYeniUye::sendVericationCode()
     std::random_device rd1;
     verificationCode = std::to_string(d(rd1));
 
-    std::string sms = std::string("SerikGencFikir, Doğrulama Kodu: ") + verificationCode.c_str() + std::string(" .Bu İsteği Siz Bulunmadıysanız Dikkate Almayınız");
+    std::string sms = std::string("SerikGencFikir Projelerinizi Gerçekleştiriyoruz, Üyelik için Doğrulama Kodu: ") + verificationCode.c_str() +
+            std::string(" .Bu İsteği Siz Bulunmadıysanız Dikkate Almayınız");
 
     this->sendSMS(this->mCepTel->text().toUTF8().c_str(),sms);
 

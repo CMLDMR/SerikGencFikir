@@ -5,6 +5,7 @@
 #include <Wt/WProgressBar.h>
 #include <Wt/WVBoxLayout.h>
 #include <Wt/WCssDecorationStyle.h>
+#include <Wt/WBreak.h>
 
 Project::Project(mongocxx::database *_db, User user)
     :BaseWidget (_db) , User (user)
@@ -217,24 +218,24 @@ void Project::initProjectList()
 
 
                     ok->clicked().connect([=] {
-                            mDialog->accept();
+                        mDialog->accept();
                     });
 
                     cancel->clicked().connect(mDialog, &Wt::WDialog::reject);
 
                     mDialog->finished().connect([=] {
-                            if (mDialog->result() == Wt::DialogCode::Accepted)
-                            {
-                                if( this->deleteProject(container->attributeValue(Style::dataoid).toUTF8()) ){
+                        if (mDialog->result() == Wt::DialogCode::Accepted)
+                        {
+                            if( this->deleteProject(container->attributeValue(Style::dataoid).toUTF8()) ){
 
-                                    this->initProjectList();
+                                this->initProjectList();
 
-                                }
-
-                            }else{
-                                this->removeChild(mDialog);
                             }
-                        });
+
+                        }else{
+                            this->removeChild(mDialog);
+                        }
+                    });
 
                     mDialog->show();
                 });
@@ -274,7 +275,7 @@ void Project::initProjectList()
 
                 std::unique_ptr<Wt::WAnchor> anchor =
                         Wt::cpp14::make_unique<Wt::WAnchor>(link,
-                                        "Dosyayı İndir");
+                                                            "Dosyayı İndir");
 
                 {
                     auto text = vLayout->addWidget(std::move(anchor),
@@ -307,6 +308,107 @@ void Project::initProjectList()
                     text->setAttributeValue(Style::style,Style::font::size::s14px+Style::color::color(Style::color::White::AliceBlue)+Style::font::weight::bold);
                     text->setMargin(WLength::Auto,AllSides);
                 }
+
+                container->decorationStyle().setCursor(Cursor::PointingHand);
+
+                container->clicked().connect([=](){
+
+                    auto mDialog = this->addChild(cpp14::make_unique<WDialog>("Projeye Üye Ekle"));
+
+
+                    Wt::WLabel *warnlabel =
+                            mDialog->contents()->addWidget(Wt::cpp14::make_unique<Wt::WLabel>("<span style=\"background-color:#000000;color:#ffffff;\">"
+                                                                                              "!Dikkat: Davet Ettiğiniz Kişinin Daha Önceden Üye Olması Gerekmektedir.</span>"));
+
+                    auto uyeTelno = mDialog->contents()->addWidget(cpp14::make_unique<WLineEdit>());
+                    uyeTelno->setPlaceholderText("Üye Olacak Kişinin Telefon Numarasını Giriniz");
+
+                    Wt::WLabel *uyari =
+                            mDialog->contents()->addWidget(Wt::cpp14::make_unique<Wt::WLabel>(""));
+
+
+                    Wt::WPushButton *ok =
+                            mDialog->footer()->addWidget(Wt::cpp14::make_unique<Wt::WPushButton>("Davetiye Gönder"));
+                    ok->setDefault(true);
+
+                    Wt::WPushButton *cancel =
+                            mDialog->footer()->addWidget(Wt::cpp14::make_unique<Wt::WPushButton>("İptal"));
+                    mDialog->rejectWhenEscapePressed();
+
+
+                    ok->clicked().connect([=] {
+
+                        bool exist = false;
+                        if( uyeTCNO->text().toUTF8().size() != 11 )
+                        {
+                            uyari->setText("<span style=\"background-color:#B4009E;color:#ffffff;\">!Hatalı Telefon Numarası</span>");
+                            std::cout << "uyari : "<< uyari->text().toUTF8() << std::endl;
+                        }else{
+
+
+                            auto filter = document{};
+
+                            try {
+                                filter.append(kvp("ceptelkey",uyeTelno->text().toUTF8()));
+                            } catch (bsoncxx::exception &e) {
+                                std::cout << "UYE TCNO Error: " << e.what() << std::endl;
+                            }
+
+                            try {
+                                auto count = this->getDb()->collection("Users").count(filter.view());
+
+                                if( count )
+                                {
+                                    exist = true;
+                                }else{
+                                    uyari->setText("<span style=\"background-color:#B4009E;color:#ffffff;\">Böyle Bir Kişi Yok</span>");
+
+                                }
+
+
+                            } catch (mongocxx::exception &e) {
+
+                            }
+
+
+                            if( exist )
+                            {
+                                filter.clear();
+
+                                try {
+                                    filter.append(kvp("tcno",this->getTcno()));
+                                } catch (bsoncxx::exception &e) {
+
+                                }
+
+
+
+
+                            }
+
+                            mDialog->accept();
+                        }
+
+
+                    });
+
+                    cancel->clicked().connect(mDialog, &Wt::WDialog::reject);
+
+                    mDialog->finished().connect([=] {
+                        if (mDialog->result() == Wt::DialogCode::Accepted)
+                        {
+
+
+
+                        }else{
+                            this->removeChild(mDialog);
+                        }
+                    });
+
+
+                    mDialog->show();
+
+                });
             }
         }
 

@@ -6,6 +6,8 @@
 
 #include <Wt/Http/Client.h>
 
+#include "../url.h"
+
 BaseClass::BaseClass(mongocxx::database *_db)
     :db(_db)
 {
@@ -193,11 +195,11 @@ void BaseWidget::sendSMS(std::string numara, std::string sms)
 
     stream.writeStartElement("MainmsgBody");
 
-    stream.writeTextElement("Command", "0");
-    stream.writeTextElement("PlatformID", "1");
-    stream.writeTextElement("ChannelCode", "474");
-    stream.writeTextElement("UserName", "serikbel");
-    stream.writeTextElement("PassWord", "nisan2012");
+    stream.writeTextElement("Command", smsCommand);
+    stream.writeTextElement("PlatformID", smsPlatformID);
+    stream.writeTextElement("ChannelCode", smsChannelCode);
+    stream.writeTextElement("UserName", smsUserName);
+    stream.writeTextElement("PassWord", smsPassWord);
     stream.writeTextElement("Mesgbody", sms.c_str() );
     stream.writeTextElement("Numbers", numara.c_str() );
     stream.writeTextElement("Type", "1");
