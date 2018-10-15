@@ -30,6 +30,12 @@ private:
 
     WLineEdit* mProjectName;
     WComboBox* mKategori;
+
+
+    std::int32_t deleteProject(std::string projectOid);
+
+    string downloadProjectFile(std::string fileoid);
+
 };
 
 #endif // PROJECT_H

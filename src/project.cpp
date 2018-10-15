@@ -4,6 +4,7 @@
 #include <Wt/WFileUpload.h>
 #include <Wt/WProgressBar.h>
 #include <Wt/WVBoxLayout.h>
+#include <Wt/WCssDecorationStyle.h>
 
 Project::Project(mongocxx::database *_db, User user)
     :BaseWidget (_db) , User (user)
@@ -22,7 +23,7 @@ Project::Project(mongocxx::database *_db, User user)
 
     mListContainer = row->addWidget(cpp14::make_unique<WContainerWidget>());
     mListContainer->addStyleClass(Bootstrap::Grid::col_full_12);
-    initProjectList();
+    this->initProjectList();
 
     mController = row->addWidget(cpp14::make_unique<WContainerWidget>());
     mController->addStyleClass(Bootstrap::Grid::col_full_12);
@@ -126,17 +127,16 @@ void Project::initProjectList()
                                          Bootstrap::Grid::Small::col_sm_12+
                                          Bootstrap::Grid::ExtraSmall::col_xs_6);
                 container->setContentAlignment(AlignmentFlag::Center);
-//                container->setHeight(100);
 
                 auto vLayout = container->setLayout(cpp14::make_unique<WVBoxLayout>());
 
-                {
-                    auto text = vLayout->addWidget(cpp14::make_unique<WText>(std::string("Proje Adı")),
-                            0,
-                            AlignmentFlag::Center|AlignmentFlag::Middle );
-                    text->setAttributeValue(Style::style,Style::font::size::s14px+Style::color::color(Style::color::White::AliceBlue)+Style::font::weight::bold);
-                    text->setMargin(WLength::Auto,AllSides);
-                }
+                //                {
+                //                    auto text = vLayout->addWidget(cpp14::make_unique<WText>(std::string("Proje Adı")),
+                //                            0,
+                //                            AlignmentFlag::Center|AlignmentFlag::Middle );
+                //                    text->setAttributeValue(Style::style,Style::font::size::s14px+Style::color::color(Style::color::White::AliceBlue)+Style::font::weight::bold);
+                //                    text->setMargin(WLength::Auto,AllSides);
+                //                }
 
                 {
                     auto text = vLayout->addWidget(cpp14::make_unique<WText>(doc["projeadi"].get_utf8().value.to_string()),
@@ -155,14 +155,13 @@ void Project::initProjectList()
                                          Bootstrap::Grid::ExtraSmall::col_xs_6);
                 container->setContentAlignment(AlignmentFlag::Center);
                 container->setAttributeValue(Style::style,Style::Border::left::border("1px solid white"));
-//                container->setHeight(100);
 
                 auto vLayout = container->setLayout(cpp14::make_unique<WVBoxLayout>());
 
                 {
                     auto text = vLayout->addWidget(cpp14::make_unique<WText>(std::string("Kategori")),
-                            0,
-                            AlignmentFlag::Center|AlignmentFlag::Middle );
+                                                   0,
+                                                   AlignmentFlag::Center|AlignmentFlag::Middle );
                     text->setAttributeValue(Style::style,Style::font::size::s14px+Style::color::color(Style::color::White::AliceBlue)+Style::font::weight::bold);
                     text->setMargin(WLength::Auto,AllSides);
                 }
@@ -178,10 +177,10 @@ void Project::initProjectList()
 
             {
                 auto container = rContainer->addWidget(cpp14::make_unique<WContainerWidget>());
-                container->addStyleClass(Bootstrap::Grid::Large::col_lg_2+
-                                         Bootstrap::Grid::Medium::col_md_2+
-                                         Bootstrap::Grid::Small::col_sm_3+
-                                         Bootstrap::Grid::ExtraSmall::col_xs_6);
+                container->addStyleClass(Bootstrap::Grid::Large::col_lg_1+
+                                         Bootstrap::Grid::Medium::col_md_1+
+                                         Bootstrap::Grid::Small::col_sm_2+
+                                         Bootstrap::Grid::ExtraSmall::col_xs_3);
                 container->setContentAlignment(AlignmentFlag::Center);
                 container->setHeight(50);
                 container->setAttributeValue(Style::style,Style::background::color::rgba(127,0,0));
@@ -190,11 +189,56 @@ void Project::initProjectList()
 
                 {
                     auto text = vLayout->addWidget(cpp14::make_unique<WText>(std::string("Sil")),
-                            0,
-                            AlignmentFlag::Center|AlignmentFlag::Middle );
+                                                   0,
+                                                   AlignmentFlag::Center|AlignmentFlag::Middle );
                     text->setAttributeValue(Style::style,Style::font::size::s14px+Style::color::color(Style::color::White::AliceBlue)+Style::font::weight::bold);
                     text->setMargin(WLength::Auto,AllSides);
                 }
+
+                container->decorationStyle().setCursor(Cursor::PointingHand);
+
+                container->setAttributeValue(Style::dataoid,doc["_id"].get_oid().value.to_string());
+
+                container->clicked().connect([=](){
+                    auto mDialog = this->addChild(cpp14::make_unique<WDialog>("Sil?"));
+
+
+                    Wt::WLabel *label =
+                            mDialog->contents()->addWidget(Wt::cpp14::make_unique<Wt::WLabel>("Silmek İstediğinize Eminmisiniz?"));
+
+
+                    Wt::WPushButton *ok =
+                            mDialog->footer()->addWidget(Wt::cpp14::make_unique<Wt::WPushButton>("Evet"));
+                    ok->setDefault(true);
+
+                    Wt::WPushButton *cancel =
+                            mDialog->footer()->addWidget(Wt::cpp14::make_unique<Wt::WPushButton>("Hayır"));
+                    mDialog->rejectWhenEscapePressed();
+
+
+                    ok->clicked().connect([=] {
+                            mDialog->accept();
+                    });
+
+                    cancel->clicked().connect(mDialog, &Wt::WDialog::reject);
+
+                    mDialog->finished().connect([=] {
+                            if (mDialog->result() == Wt::DialogCode::Accepted)
+                            {
+                                if( this->deleteProject(container->attributeValue(Style::dataoid).toUTF8()) ){
+
+                                    this->initProjectList();
+
+                                }
+
+                            }else{
+                                this->removeChild(mDialog);
+                            }
+                        });
+
+                    mDialog->show();
+                });
+
             }
 
             {
@@ -209,10 +253,57 @@ void Project::initProjectList()
 
                 auto vLayout = container->setLayout(cpp14::make_unique<WVBoxLayout>());
 
+                container->setAttributeValue(Style::dataoid,doc["dosya"].get_oid().value.to_string());
+
+                auto downloadlink = this->downloadProjectFile(container->attributeValue(Style::dataoid).toUTF8());
+
+
+                std::cout << "Download Link: " << downloadlink << std::endl;
+
+                QFileInfo info( doc["dosyaadi"].get_utf8().value.to_string().c_str());
+
+                QString newFileName = QString("docroot/tempfile/")+container->attributeValue(Style::dataoid).toUTF8().c_str() + "." +info.suffix().toStdString().c_str();
+
+                QString downloadFileName = QString("tempfile/")+container->attributeValue(Style::dataoid).toUTF8().c_str() + "." +info.suffix().toStdString().c_str();
+
+                std::cout << "File Renamed: " << QFile::rename(QString("docroot/")+downloadlink.c_str(),newFileName) << std::endl;
+
+
+                Wt::WLink link = Wt::WLink(downloadFileName.toStdString());
+                link.setTarget(Wt::LinkTarget::NewWindow);
+
+                std::unique_ptr<Wt::WAnchor> anchor =
+                        Wt::cpp14::make_unique<Wt::WAnchor>(link,
+                                        "Dosyayı İndir");
+
                 {
-                    auto text = vLayout->addWidget(cpp14::make_unique<WText>(std::string("Dosyayı İndir")),
-                            0,
-                            AlignmentFlag::Center|AlignmentFlag::Middle );
+                    auto text = vLayout->addWidget(std::move(anchor),
+                                                   0,
+                                                   AlignmentFlag::Center|AlignmentFlag::Middle );
+                    text->setAttributeValue(Style::style,Style::font::size::s14px+Style::color::color(Style::color::White::AliceBlue)+Style::font::weight::bold);
+                    text->setMargin(WLength::Auto,AllSides);
+                }
+
+
+
+            }
+
+            {
+                auto container = rContainer->addWidget(cpp14::make_unique<WContainerWidget>());
+                container->addStyleClass(Bootstrap::Grid::Large::col_lg_1+
+                                         Bootstrap::Grid::Medium::col_md_1+
+                                         Bootstrap::Grid::Small::col_sm_2+
+                                         Bootstrap::Grid::ExtraSmall::col_xs_3);
+                container->setContentAlignment(AlignmentFlag::Center);
+                container->setHeight(50);
+                container->setAttributeValue(Style::style,Style::background::color::rgba(0,127,65));
+
+                auto vLayout = container->setLayout(cpp14::make_unique<WVBoxLayout>());
+
+                {
+                    auto text = vLayout->addWidget(cpp14::make_unique<WText>(std::string("Kişi Ekle+")),
+                                                   0,
+                                                   AlignmentFlag::Center|AlignmentFlag::Middle );
                     text->setAttributeValue(Style::style,Style::font::size::s14px+Style::color::color(Style::color::White::AliceBlue)+Style::font::weight::bold);
                     text->setMargin(WLength::Auto,AllSides);
                 }
@@ -294,9 +385,9 @@ void Project::initNewProject()
         Wt::WFileUpload *fu = container->addWidget(Wt::cpp14::make_unique<Wt::WFileUpload>());
 
 
-//        fu->setFileTextSize(500); // Set the maximum file size to 50 kB.
+        //        fu->setFileTextSize(500); // Set the maximum file size to 50 kB.
         fu->setProgressBar(Wt::cpp14::make_unique<Wt::WProgressBar>());
-//        fu->setMargin(10, Wt::Side::Right);
+        //        fu->setMargin(10, Wt::Side::Right);
 
 
 
@@ -421,5 +512,42 @@ void Project::initNewProject()
         });
     }
 
+
+}
+
+int32_t Project::deleteProject(string projectOid)
+{
+
+
+    auto filter = document{};
+
+    try {
+        filter.append(kvp("_id",bsoncxx::oid(projectOid)));
+    } catch (bsoncxx::exception &e) {
+        std::cout << "delete Filter Error: " << e.what() << std::endl;
+    }
+
+
+    try {
+        auto del = this->getDb()->collection("Projeler").delete_one(filter.view());
+
+        if( del )
+        {
+            return del.value().deleted_count();
+        }else{
+            return 0;
+        }
+
+    } catch (mongocxx::exception &e) {
+        std::cout << "Delete Mongocxx Error: "<<e.what() << std::endl;
+        return 0;
+    }
+
+}
+
+std::string Project::downloadProjectFile(string fileoid)
+{
+
+    return this->download(bsoncxx::oid(fileoid));
 
 }
