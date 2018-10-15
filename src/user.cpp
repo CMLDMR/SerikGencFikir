@@ -60,6 +60,7 @@ void User::setFromView(bsoncxx::document::view userView)
     } catch (bsoncxx::exception &e) {
         std::cout << "Foto Exract View Error: " << e.what() << std::endl;
     }
+
 }
 
 User User::getUser() const
@@ -184,13 +185,19 @@ bsoncxx::builder::basic::document User::getDocument()
     }
 
     try {
-        doc.append(kvp(tcnokey,this->getCeptel()));
+        doc.append(kvp(tcnokey,this->getTcno()));
     } catch (bsoncxx::exception &e) {
         std::cout << "tcnokey: " << e.what() << std::endl;
     }
 
     try {
         doc.append(kvp(passwordkey,this->getPassword()));
+    } catch (bsoncxx::exception &e) {
+        std::cout << "passwordkey: " << e.what() << std::endl;
+    }
+
+    try {
+        doc.append(kvp("foto",this->getFotoOid()));
     } catch (bsoncxx::exception &e) {
         std::cout << "passwordkey: " << e.what() << std::endl;
     }
