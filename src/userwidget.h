@@ -5,6 +5,7 @@
 #include "baseclass.h"
 #include "user.h"
 #include "project.h"
+#include "davetiyewidget.h"
 
 class UserWidget : public BaseWidget , public User
 {
@@ -19,6 +20,8 @@ public:
 
     void initContent();
 
+    void initDavetiyeler();
+
     Signal<NoClass> &LogOut();
 
 private:
@@ -26,8 +29,11 @@ private:
 
     WContainerWidget* infoContainer;
     WContainerWidget* contentContainer;
+    WContainerWidget* davetiyeContainer;
 
     Project* mProject;
+
+    DavetiyeWidget* mDavetiyeWidget;
 
     Signal<NoClass> _logOut;
 

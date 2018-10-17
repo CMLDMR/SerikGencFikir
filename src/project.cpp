@@ -183,7 +183,7 @@ void Project::initProjectList()
                                          Bootstrap::Grid::Small::col_sm_2+
                                          Bootstrap::Grid::ExtraSmall::col_xs_3);
                 container->setContentAlignment(AlignmentFlag::Center);
-                container->setHeight(50);
+                container->setHeight(75);
                 container->setAttributeValue(Style::style,Style::background::color::rgba(127,0,0));
 
                 auto vLayout = container->setLayout(cpp14::make_unique<WVBoxLayout>());
@@ -246,10 +246,10 @@ void Project::initProjectList()
                 auto container = rContainer->addWidget(cpp14::make_unique<WContainerWidget>());
                 container->addStyleClass(Bootstrap::Grid::Large::col_lg_2+
                                          Bootstrap::Grid::Medium::col_md_2+
-                                         Bootstrap::Grid::Small::col_sm_3+
+                                         Bootstrap::Grid::Small::col_sm_4+
                                          Bootstrap::Grid::ExtraSmall::col_xs_6);
                 container->setContentAlignment(AlignmentFlag::Center);
-                container->setHeight(50);
+                container->setHeight(75);
                 container->setAttributeValue(Style::style,Style::background::color::rgba(0,127,0));
 
                 auto vLayout = container->setLayout(cpp14::make_unique<WVBoxLayout>());
@@ -293,25 +293,94 @@ void Project::initProjectList()
                 auto container = rContainer->addWidget(cpp14::make_unique<WContainerWidget>());
                 container->addStyleClass(Bootstrap::Grid::Large::col_lg_1+
                                          Bootstrap::Grid::Medium::col_md_1+
-                                         Bootstrap::Grid::Small::col_sm_2+
+                                         Bootstrap::Grid::Small::col_sm_12+
                                          Bootstrap::Grid::ExtraSmall::col_xs_3);
                 container->setContentAlignment(AlignmentFlag::Center);
-                container->setHeight(50);
+                container->setHeight(75);
                 container->setAttributeValue(Style::style,Style::background::color::rgba(0,127,65));
+                container->setAttributeValue(Style::dataoid,doc["_id"].get_oid().value.to_string().c_str());
 
                 auto vLayout = container->setLayout(cpp14::make_unique<WVBoxLayout>());
 
+                int uyeCount = 0;
+
                 {
-                    auto text = vLayout->addWidget(cpp14::make_unique<WText>(std::string("Kişi Ekle+")),
-                                                   0,
-                                                   AlignmentFlag::Center|AlignmentFlag::Middle );
-                    text->setAttributeValue(Style::style,Style::font::size::s14px+Style::color::color(Style::color::White::AliceBlue)+Style::font::weight::bold);
-                    text->setMargin(WLength::Auto,AllSides);
+                    auto filter = document {};
+
+                    try {
+                        filter.append(kvp("_id",bsoncxx::oid(container->attributeValue(Style::dataoid).toUTF8().c_str())));
+                    } catch (bsoncxx::exception &e) {
+
+                    }
+
+                    try {
+
+                        auto val = this->getDb()->collection("Projeler").find_one(filter.view());
+
+                        if( val )
+                        {
+                            auto array = val.value().view()["uyeler"].get_array().value;
+
+
+                            for( auto item : array )
+                            {
+                                uyeCount++;
+                            }
+
+                            if( uyeCount > 1 )
+                            {
+                            }
+                        }
+
+
+                    } catch (mongocxx::exception &e) {
+
+                    }
+
+
+                    if( uyeCount == 0 )
+                    {
+                        auto text = vLayout->addWidget(cpp14::make_unique<WText>(std::string("Kişi Ekle+")),
+                                                       0,
+                                                       AlignmentFlag::Center|AlignmentFlag::Middle );
+                        text->setAttributeValue(Style::style,Style::font::size::s10px+Style::color::color(Style::color::White::AliceBlue)+Style::font::weight::lighter);
+                        text->setMargin(WLength::Auto,AllSides);
+                    }else if (uyeCount == 1) {
+
+                        auto imgContainer = vLayout->addWidget(cpp14::make_unique<WContainerWidget>(),0,AlignmentFlag::Middle);
+                        imgContainer->setAttributeValue(Style::style,Style::background::color::color(Style::color::Red::Crimson));
+                        imgContainer->setHeight(25);
+
+                        auto text = vLayout->addWidget(cpp14::make_unique<WText>(std::string("Kişi Ekle+")),
+                                                       0,
+                                                       AlignmentFlag::Center|AlignmentFlag::Middle );
+                        text->setAttributeValue(Style::style,Style::font::size::s10px+Style::color::color(Style::color::White::AliceBlue)+Style::font::weight::lighter);
+                        text->setMargin(WLength::Auto,AllSides);
+
+                    }else{
+
+                        {
+                            auto imgContainer = vLayout->addWidget(cpp14::make_unique<WContainerWidget>(),0,AlignmentFlag::Middle);
+                            imgContainer->setAttributeValue(Style::style,Style::background::color::color(Style::color::Red::Crimson));
+                            imgContainer->setHeight(25);
+                        }
+
+                        {
+                            auto imgContainer = vLayout->addWidget(cpp14::make_unique<WContainerWidget>(),0,AlignmentFlag::Middle);
+                            imgContainer->setAttributeValue(Style::style,Style::background::color::color(Style::color::Red::DarkSalmon));
+                            imgContainer->setHeight(25);
+                        }
+
+
+                    }
+
                 }
 
                 container->decorationStyle().setCursor(Cursor::PointingHand);
 
                 container->clicked().connect([=](){
+
+
 
                     auto mDialog = this->addChild(cpp14::make_unique<WDialog>("Projeye Üye Ekle"));
 
@@ -339,10 +408,9 @@ void Project::initProjectList()
                     ok->clicked().connect([=] {
 
                         bool exist = false;
-                        if( uyeTCNO->text().toUTF8().size() != 11 )
+                        if( uyeTelno->text().toUTF8().size() != 11 )
                         {
                             uyari->setText("<span style=\"background-color:#B4009E;color:#ffffff;\">!Hatalı Telefon Numarası</span>");
-                            std::cout << "uyari : "<< uyari->text().toUTF8() << std::endl;
                         }else{
 
 
@@ -371,25 +439,91 @@ void Project::initProjectList()
                             }
 
 
+                            filter.clear();
+
+                            try {
+                                filter.append(kvp("_id",bsoncxx::oid(container->attributeValue(Style::dataoid).toUTF8().c_str())));
+                            } catch (bsoncxx::exception &e) {
+
+                            }
+
+                            try {
+
+                                auto val = this->getDb()->collection("Projeler").find_one(filter.view());
+
+                                if( val )
+                                {
+                                    auto array = val.value().view()["uyeler"].get_array().value;
+
+                                    int uyeCount = 0;
+
+                                    for( auto item : array )
+                                    {
+                                        uyeCount++;
+                                    }
+
+                                    if( uyeCount > 1 )
+                                    {
+                                        exist = false;
+                                    }
+                                }
+
+
+                            } catch (mongocxx::exception &e) {
+
+                            }
+
+
+
                             if( exist )
                             {
                                 filter.clear();
 
                                 try {
-                                    filter.append(kvp("tcno",this->getTcno()));
+                                    filter.append(kvp("_id",bsoncxx::oid(container->attributeValue(Style::dataoid).toUTF8().c_str())));
+                                } catch (bsoncxx::exception &e) {
+
+                                }
+
+                                auto uyeDoc = document{};
+
+                                try {
+                                    uyeDoc.append(kvp("telno",uyeTelno->text().toUTF8()));
+                                } catch (bsoncxx::exception &e) {
+
+                                }
+
+                                try {
+                                    uyeDoc.append(kvp("onay",bsoncxx::types::b_int32{0}));
                                 } catch (bsoncxx::exception &e) {
 
                                 }
 
 
+                                auto pushDoc = document{};
 
+                                try {
+                                    pushDoc.append(kvp("$push",make_document(kvp("uyeler",uyeDoc))));
+                                } catch (bsoncxx::exception &e) {
 
+                                }
+
+                                try {
+                                    auto upt = this->getDb()->collection("Projeler").update_one(filter.view(),pushDoc.view());
+                                    if( upt )
+                                    {
+                                        if( upt.value().modified_count() )
+                                        {
+                                            mDialog->accept();
+                                        }else{
+                                            uyari->setText("<span style=\"background-color:#FA559E;color:#ffffff;\"><b>Davetiye Gönderilemedi</b></span>");
+                                        }
+                                    }
+                                } catch (mongocxx::exception &e) {
+                                    uyari->setText("<span style=\"background-color:#B4009E;color:#ffffff;\">"+std::string(e.what())+"</span>");
+                                }
                             }
-
-                            mDialog->accept();
                         }
-
-
                     });
 
                     cancel->clicked().connect(mDialog, &Wt::WDialog::reject);

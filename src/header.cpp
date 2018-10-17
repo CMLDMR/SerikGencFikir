@@ -5,7 +5,7 @@ Header::Header::Header()
     setZIndex(10);
     setHeight(100);
     setAttributeValue(Style::style,Style::background::color::rgb(51,102,153));
-
+    setPositionScheme(PositionScheme::Relative);
     addStyleClass(Bootstrap::Grid::container_fluid);
 
     auto row = addWidget(cpp14::make_unique<WContainerWidget>());

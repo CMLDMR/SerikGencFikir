@@ -27,7 +27,8 @@ SOURCES += \
     src/user.cpp \
     src/baseclass.cpp \
     src/userwidget.cpp \
-    src/project.cpp
+    src/project.cpp \
+    src/davetiyewidget.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -58,7 +59,8 @@ HEADERS += \
     src/user.h \
     src/baseclass.h \
     src/userwidget.h \
-    src/project.h
+    src/project.h \
+    src/davetiyewidget.h
 
 DISTFILES += \
     ../Release/docroot/css/css.css \

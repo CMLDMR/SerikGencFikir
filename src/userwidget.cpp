@@ -44,10 +44,18 @@ void UserWidget::initPage()
                                      Style::Border::borderRardius("5","25","5","25")+
                                      Style::background::color::rgba(0,0,0,.25));
 
+    davetiyeContainer = mRow->addWidget(cpp14::make_unique<WContainerWidget>());
+    davetiyeContainer->addStyleClass(Bootstrap::Grid::col_full_12);
+    davetiyeContainer->setAttributeValue(Style::style,Style::Border::border("2px solid white")+
+                                     Style::Border::borderRardius("25","25","5","5")+
+                                     Style::background::color::rgba(0,0,0,.25));
+    davetiyeContainer->setMargin(25,Side::Bottom|Side::Top);
+
     this->initInfo();
 
     this->initContent();
 
+    this->initDavetiyeler();
 
 }
 
@@ -237,6 +245,15 @@ void UserWidget::initContent()
     contentContainer->clear();
 
     mProject = contentContainer->addWidget(cpp14::make_unique<Project>(this->getDb(),this->getUser()));
+
+}
+
+void UserWidget::initDavetiyeler()
+{
+    davetiyeContainer->clear();
+
+    mDavetiyeWidget = davetiyeContainer->addWidget(cpp14::make_unique<DavetiyeWidget>(this->getDb(),this->getDocument().view()));
+
 
 }
 
