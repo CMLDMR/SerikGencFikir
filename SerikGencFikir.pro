@@ -60,7 +60,8 @@ HEADERS += \
     src/baseclass.h \
     src/userwidget.h \
     src/project.h \
-    src/davetiyewidget.h
+    src/davetiyewidget.h \
+    todolist.h
 
 DISTFILES += \
     ../Release/docroot/css/css.css \

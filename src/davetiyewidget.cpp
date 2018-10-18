@@ -97,8 +97,40 @@ void DavetiyeWidget::initDavetiler()
                 itemContainer->addStyleClass(Bootstrap::Grid::Large::col_lg_3+Bootstrap::Grid::Medium::col_md_3+Bootstrap::Grid::Small::col_sm_3+Bootstrap::Grid::ExtraSmall::col_xs_6);
                 itemContainer->setAttributeValue(Style::style,Style::background::color::rgba(25,75,125));
                 auto vLayout = itemContainer->setLayout(cpp14::make_unique<WVBoxLayout>());
-                auto text = vLayout->addWidget(cpp14::make_unique<WText>("Projeye Bak"),0,AlignmentFlag::Middle|AlignmentFlag::Center);
-                text->setAttributeValue(Style::style,Style::color::color(Style::color::White::Azure)+Style::font::size::s16px+Style::font::weight::bold);
+//                auto text = vLayout->addWidget(cpp14::make_unique<WText>("Projeye Bak"),0,AlignmentFlag::Middle|AlignmentFlag::Center);
+//                text->setAttributeValue(Style::style,Style::color::color(Style::color::White::Azure)+Style::font::size::s16px+Style::font::weight::bold);
+
+                auto downloadlink = this->download(doc["dosya"].get_oid().value);
+
+
+                QFileInfo
+                    info(doc["dosyaadi"].get_utf8().value.to_string().c_str());
+
+                QString newFileName =
+                    QString("docroot/tempfile/") +
+                                      doc["dosya"].get_oid().value.to_string().c_str() +
+                    "." + info.suffix().toStdString().c_str();
+
+                QString downloadFileName = QString("tempfile/")+doc["dosya"].get_oid().value.to_string().c_str() + "." +info.suffix().toStdString().c_str();
+
+                std::cout << "File Renamed: " << QFile::rename(QString("docroot/")+downloadlink.c_str(),newFileName) << std::endl;
+
+
+                Wt::WLink link = Wt::WLink(downloadFileName.toStdString());
+                link.setTarget(Wt::LinkTarget::NewWindow);
+
+                std::unique_ptr<Wt::WAnchor> anchor =
+                    Wt::cpp14::make_unique<Wt::WAnchor>(link, "Projeye Bak");
+
+                {
+                    auto text = vLayout->addWidget(std::move(anchor),
+                                                   0,
+                                                   AlignmentFlag::Center|AlignmentFlag::Middle );
+                    text->setAttributeValue(Style::style,Style::font::size::s14px+Style::color::color(Style::color::White::AliceBlue)+Style::font::weight::bold);
+                    text->setMargin(WLength::Auto,AllSides);
+                }
+
+
             }
 
 
