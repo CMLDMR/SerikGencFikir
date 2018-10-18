@@ -58,11 +58,9 @@ using namespace Wt;
 class BaseClass
 {
 public:
-    BaseClass(mongocxx::database* _db);
+  explicit BaseClass(mongocxx::database *_db);
 
-
-
-    mongocxx::database *getDb();
+  mongocxx::database *getDb();
 
     mongocxx::collection collection(const std::string& collectionName);
 
@@ -82,9 +80,9 @@ private:
 class BaseWidget : public WContainerWidget , public BaseClass
 {
 public:
-    BaseWidget(mongocxx::database* _db);
+  explicit BaseWidget(mongocxx::database *_db);
 
-    void sendSMS(std::string numara , std::string sms);
+  void sendSMS(std::string numara, std::string sms);
 
 
     enum class MessageType{
