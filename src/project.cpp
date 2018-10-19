@@ -91,6 +91,8 @@ void Project::initTitleContainer()
 
 void Project::initProjectList()
 {
+
+
     mListContainer->clear();
 
 
@@ -115,7 +117,7 @@ void Project::initProjectList()
             auto fContainer = contentContainer->addWidget(cpp14::make_unique<WContainerWidget>());
             fContainer->addStyleClass(Bootstrap::Grid::container_fluid);
             fContainer->setAttributeValue(Style::style,Style::background::color::rgba(0,0,0));
-            fContainer->setMargin(2,Side::Top);
+            fContainer->setMargin(5,Side::Top);
 
 
             auto rContainer = fContainer->addWidget(cpp14::make_unique<WContainerWidget>());
@@ -130,14 +132,6 @@ void Project::initProjectList()
                 container->setContentAlignment(AlignmentFlag::Center);
 
                 auto vLayout = container->setLayout(cpp14::make_unique<WVBoxLayout>());
-
-                //                {
-                //                    auto text = vLayout->addWidget(cpp14::make_unique<WText>(std::string("Proje Adı")),
-                //                            0,
-                //                            AlignmentFlag::Center|AlignmentFlag::Middle );
-                //                    text->setAttributeValue(Style::style,Style::font::size::s14px+Style::color::color(Style::color::White::AliceBlue)+Style::font::weight::bold);
-                //                    text->setMargin(WLength::Auto,AllSides);
-                //                }
 
                 {
                     auto text = vLayout->addWidget(cpp14::make_unique<WText>(doc["projeadi"].get_utf8().value.to_string()),
@@ -244,8 +238,8 @@ void Project::initProjectList()
 
             {
                 auto container = rContainer->addWidget(cpp14::make_unique<WContainerWidget>());
-                container->addStyleClass(Bootstrap::Grid::Large::col_lg_2+
-                                         Bootstrap::Grid::Medium::col_md_2+
+                container->addStyleClass(Bootstrap::Grid::Large::col_lg_3+
+                                         Bootstrap::Grid::Medium::col_md_3+
                                          Bootstrap::Grid::Small::col_sm_4+
                                          Bootstrap::Grid::ExtraSmall::col_xs_6);
                 container->setContentAlignment(AlignmentFlag::Center);
@@ -257,7 +251,6 @@ void Project::initProjectList()
                 container->setAttributeValue(Style::dataoid,doc["dosya"].get_oid().value.to_string());
 
                 auto downloadlink = this->downloadProjectFile(container->attributeValue(Style::dataoid).toUTF8());
-
 
                 std::cout << "Download Link: " << downloadlink << std::endl;
 
@@ -291,10 +284,10 @@ void Project::initProjectList()
 
             {
                 auto container = rContainer->addWidget(cpp14::make_unique<WContainerWidget>());
-                container->addStyleClass(Bootstrap::Grid::Large::col_lg_1+
-                                         Bootstrap::Grid::Medium::col_md_1+
+                container->addStyleClass(Bootstrap::Grid::Large::col_lg_12+
+                                         Bootstrap::Grid::Medium::col_md_12+
                                          Bootstrap::Grid::Small::col_sm_12+
-                                         Bootstrap::Grid::ExtraSmall::col_xs_3);
+                                         Bootstrap::Grid::ExtraSmall::col_xs_12);
                 container->setContentAlignment(AlignmentFlag::Center);
                 container->setHeight(75);
                 container->setAttributeValue(Style::style,Style::background::color::rgba(0,127,65));
@@ -313,23 +306,32 @@ void Project::initProjectList()
 
                     }
 
+                    std::vector<std::string> uyetclist;
+                    std::vector<int> uyeAcceptedlist;
+
                     try {
 
                         auto val = this->getDb()->collection("Projeler").find_one(filter.view());
 
                         if( val )
                         {
-                            auto array = val.value().view()["uyeler"].get_array().value;
 
+                            try {
+                                auto array = val.value().view()["uyeler"].get_array().value;
 
-                            for( auto item : array )
-                            {
-                                uyeCount++;
+                                for( auto item : array )
+                                {
+                                    auto uyeDoc = item.get_document().view()["telno"].get_utf8().value.to_string();
+                                    uyetclist.push_back(uyeDoc);
+                                    uyeAcceptedlist.push_back(item.get_document().view()["onay"].get_int32().value);
+                                    uyeCount++;
+                                }
+
+                            } catch (bsoncxx::exception &e) {
+                                std::cout << "Line: " << __LINE__ << " ->" <<e.what() << std::endl;
                             }
 
-                            if( uyeCount > 1 )
-                            {
-                            }
+
                         }
 
 
@@ -337,212 +339,698 @@ void Project::initProjectList()
 
                     }
 
+                    // Hiç Üye Yok ise Kişi Ekle Butonu
+                    if (uyetclist.size() == 0) {
+                        auto text = vLayout->addWidget(
+                                    cpp14::make_unique<WText>(std::string("Kişi Ekle+")),
+                                    0, AlignmentFlag::Center | AlignmentFlag::Middle);
+                        text->setAttributeValue(
+                                    Style::style,
+                                    Style::font::size::s10px +
+                                    Style::color::color(
+                                        Style::color::White::AliceBlue) +
+                                    Style::font::weight::lighter);
+                        text->setMargin(WLength::Auto, AllSides);
 
-                    if( uyeCount == 0 )
-                    {
-                        auto text = vLayout->addWidget(cpp14::make_unique<WText>(std::string("Kişi Ekle+")),
-                                                       0,
-                                                       AlignmentFlag::Center|AlignmentFlag::Middle );
-                        text->setAttributeValue(Style::style,Style::font::size::s10px+Style::color::color(Style::color::White::AliceBlue)+Style::font::weight::lighter);
-                        text->setMargin(WLength::Auto,AllSides);
-                    }else if (uyeCount == 1) {
+                        text->decorationStyle().setCursor(Cursor::PointingHand);
+
+                        text->clicked().connect([=](){
+
+
+
+                            auto mDialog = this->addChild(cpp14::make_unique<WDialog>("Projeye Üye Ekle"));
+
+
+                            Wt::WLabel *warnlabel =
+                                    mDialog->contents()->addWidget(Wt::cpp14::make_unique<Wt::WLabel>("<span style=\"background-color:#000000;color:#ffffff;\">"
+                                                                                                      "!Dikkat: Davet Ettiğiniz Kişinin Daha Önceden Üye Olması Gerekmektedir.</span>"));
+
+                            auto uyeTelno = mDialog->contents()->addWidget(cpp14::make_unique<WLineEdit>());
+                            uyeTelno->setPlaceholderText("Üye Olacak Kişinin Telefon Numarasını Giriniz");
+
+                            Wt::WLabel *uyari =
+                                    mDialog->contents()->addWidget(Wt::cpp14::make_unique<Wt::WLabel>(""));
+
+
+                            Wt::WPushButton *ok =
+                                    mDialog->footer()->addWidget(Wt::cpp14::make_unique<Wt::WPushButton>("Davetiye Gönder"));
+                            ok->setDefault(true);
+
+                            Wt::WPushButton *cancel =
+                                    mDialog->footer()->addWidget(Wt::cpp14::make_unique<Wt::WPushButton>("İptal"));
+                            mDialog->rejectWhenEscapePressed();
+
+
+                            ok->clicked().connect([=] {
+
+                                bool exist = false;
+                                if( uyeTelno->text().toUTF8().size() != 11 )
+                                {
+                                    uyari->setText("<span style=\"background-color:#B4009E;color:#ffffff;\">!Hatalı Telefon Numarası</span>");
+                                }else if (uyeTelno->text().toUTF8() == this->getCeptel() ) {
+                                    uyari->setText("<span style=\"background-color:#B4009E;color:#ffffff;\">!Kendi Projenize Üye Olamazsınız</span>");
+                                }else{
+
+
+                                    auto filter = document{};
+
+                                    try {
+                                        filter.append(kvp("ceptelkey",uyeTelno->text().toUTF8()));
+                                    } catch (bsoncxx::exception &e) {
+                                        std::cout << "UYE TCNO Error: " << e.what() << std::endl;
+                                    }
+
+                                    try {
+                                        auto count = this->getDb()->collection("Users").count(filter.view());
+
+                                        if( count )
+                                        {
+                                            exist = true;
+                                        }else{
+                                            uyari->setText("<span style=\"background-color:#B4009E;color:#ffffff;\">Böyle Bir Kişi Yok</span>");
+
+                                        }
+
+
+                                    } catch (mongocxx::exception &e) {
+
+                                    }
+
+
+                                    // Uye Veritabanında var. Projede Üyeliği Var mı?
+                                    if( exist )
+                                    {
+
+                                        filter.clear();
+
+                                        try {
+                                            filter.append(kvp("_id",bsoncxx::oid(container->attributeValue(Style::dataoid).toUTF8().c_str())));
+                                        } catch (bsoncxx::exception &e) {
+
+                                        }
+
+                                        try {
+
+                                            auto val = this->getDb()->collection("Projeler").find_one(filter.view());
+
+                                            if( val )
+                                            {
+
+                                                int uyeCount = 0;
+
+                                                try {
+                                                    auto element = val.value().view()["uyeler"].get_array().value;
+
+                                                    for( auto item : element )
+                                                    {
+                                                        uyeCount++;
+                                                    }
+
+                                                    if( uyeCount > 1 )
+                                                    {
+                                                        exist = false;
+                                                    }
+
+
+                                                } catch (bsoncxx::exception &e) {
+                                                    std::cout << "Line " << __LINE__ << "->val.value().view() in uyeler type " << "array() :"<< e.what() << std::endl;
+                                                }
+
+                                            }
+
+
+                                        } catch (mongocxx::exception &e) {
+
+                                        }
+                                    }
+
+
+                                    if( uyeCount )
+                                    {
+                                        uyari->setText("<span style=\"background-color:#B4009E;color:#ffffff;\">Bu Kişi Zaten Davet Edilmiş</span>");
+                                    }
+
+                                    if( exist )
+                                    {
+                                        filter.clear();
+
+
+
+                                        try {
+                                            filter.append(kvp("_id",bsoncxx::oid(container->attributeValue(Style::dataoid).toUTF8().c_str()))) ;
+                                        } catch (bsoncxx::exception &e) {
+                                            std::cout << "Line " << __LINE__ << ":-> filter Key" << "_id" <<" "<< e.what() << std::endl;
+                                        }
+
+
+
+
+
+
+                                        auto uyeDoc = document{};
+
+                                        try {
+                                            uyeDoc.append(kvp("telno",uyeTelno->text().toUTF8())) ;
+                                        } catch (bsoncxx::exception &e) {
+                                            std::cout << "Line " << __LINE__ << ":-> uye Key" << "telno" <<" "<< e.what() << std::endl;
+                                        }
+
+
+
+                                        try {
+                                            uyeDoc.append(kvp("onay",bsoncxx::types::b_int32{0})) ;
+                                        } catch (bsoncxx::exception &e) {
+                                            std::cout << "Line " << __LINE__ << "-> uyeDoc." << "onay :"<< e.what() << std::endl;
+                                        }
+
+
+
+
+                                        auto pushDoc = document{};
+
+
+                                        try {
+                                            pushDoc.append(kvp("$push",make_document(kvp("uyeler",uyeDoc)))) ;
+                                        } catch (bsoncxx::exception &e) {
+                                            std::cout << "Line " << __LINE__ << "-> pushDoc." << "$push :"<< e.what() << std::endl;
+                                        }
+
+
+
+
+                                        try {
+                                            auto upt = this->getDb()->collection("Projeler").update_one(filter.view(),pushDoc.view());
+                                            if( upt )
+                                            {
+                                                if( upt.value().modified_count() )
+                                                {
+                                                    mDialog->accept();
+                                                }else{
+                                                    uyari->setText("<span style=\"background-color:#FA559E;color:#ffffff;\"><b>Davetiye Gönderilemedi</b></span>");
+                                                }
+                                            }
+                                        } catch (mongocxx::exception &e) {
+                                            uyari->setText("<span style=\"background-color:#B4009E;color:#ffffff;\">"+std::string(e.what())+"</span>");
+                                        }
+                                    }
+                                }
+                            });
+
+                            cancel->clicked().connect(mDialog, &Wt::WDialog::reject);
+
+                            mDialog->finished().connect([=] {
+                                if (mDialog->result() == Wt::DialogCode::Accepted)
+                                {
+
+                                    this->initProjectList();
+
+                                }else{
+                                    this->removeChild(mDialog);
+                                }
+                            });
+
+
+                            mDialog->show();
+
+                        });
+
+
+                    }
+                    // Uye Sayısı 1 tane ise Kişi Ekle Butonu ve Uyeyi Göster
+                    else if (uyetclist.size() == 1) {
 
                         auto imgContainer = vLayout->addWidget(cpp14::make_unique<WContainerWidget>(),0,AlignmentFlag::Middle);
-                        imgContainer->setAttributeValue(Style::style,Style::background::color::color(Style::color::Red::Crimson));
+
+
+                        std::string accepted;
+
+                        if( uyeAcceptedlist.at(0) == 1 )
+                        {
+                            imgContainer->setAttributeValue(Style::style,Style::background::color::color(Style::color::Green::DarkGreen));
+                            accepted = " (+)";
+
+                        }else if( uyeAcceptedlist.at(0) == 0 ){
+                            imgContainer->setAttributeValue(Style::style,Style::background::color::color(Style::color::Grey::DarkGray));
+                            accepted = " (?)";
+                        }else{
+                            imgContainer->setAttributeValue(Style::style,Style::background::color::color(Style::color::Red::FireBrick));
+                            accepted = " (-)";
+                        }
+
                         imgContainer->setHeight(25);
+                        auto hLayout = imgContainer->setLayout(cpp14::make_unique<WHBoxLayout>());
 
-                        auto text = vLayout->addWidget(cpp14::make_unique<WText>(std::string("Kişi Ekle+")),
-                                                       0,
-                                                       AlignmentFlag::Center|AlignmentFlag::Middle );
-                        text->setAttributeValue(Style::style,Style::font::size::s10px+Style::color::color(Style::color::White::AliceBlue)+Style::font::weight::lighter);
-                        text->setMargin(WLength::Auto,AllSides);
+                        auto filter = bsoncxx::builder::basic::document{};
 
-                    }else{
 
-                        {
-                            auto imgContainer = vLayout->addWidget(cpp14::make_unique<WContainerWidget>(),0,AlignmentFlag::Middle);
-                            imgContainer->setAttributeValue(Style::style,Style::background::color::color(Style::color::Red::Crimson));
-                            imgContainer->setHeight(25);
+                        try {
+
+                            filter.append(kvp("ceptelkey",uyetclist.at(0))) ;
+
+                        } catch (bsoncxx::exception &e) {
+                            std::cout << "Line: " << __LINE__ << " ->" <<e.what() << std::endl;
                         }
 
+
+
+                        try {
+
+                            auto val = this->getDb()->collection("Users").find_one(filter.view());
+
+                            if( val )
+                            {
+                                auto text = hLayout->addWidget(cpp14::make_unique<WText>(val.value().view()["adsoyad"].get_utf8().value.to_string() + accepted),
+                                        0,AlignmentFlag::Center|AlignmentFlag::Middle);
+
+                                text->setAttributeValue(Style::style,Style::font::size::s12px+Style::font::weight::bold+
+                                                        Style::color::color(Style::color::White::AliceBlue));
+
+                                if( uyeAcceptedlist.at(0) == 0 || uyeAcceptedlist.at(0) == -1 )
+                                {
+                                    hLayout->addSpacing(5);
+
+
+                                    auto text1 = hLayout->addWidget(cpp14::make_unique<WText>("Davetiyeyi İptal Et"),
+                                            0,AlignmentFlag::Center|AlignmentFlag::Middle);
+
+                                    text1->setAttributeValue( Style::style , Style::font::size::s12px + Style::font::weight::bold +
+                                                            Style::color::color( Style::color::Grey::Black ) );
+
+
+                                    text1->decorationStyle().setCursor(Cursor::PointingHand);
+
+                                    text1->clicked().connect([=](){
+
+                                        auto filter = document{};
+
+
+
+                                        try {
+                                            filter.append(kvp("_id",bsoncxx::oid(container->attributeValue(Style::dataoid).toUTF8().c_str()))) ;
+                                        } catch (bsoncxx::exception &e) {
+                                            std::cout << "Line " << __LINE__ << "-> filter." << "_id :"<< e.what() << std::endl;
+                                        }
+
+                                        try {
+                                            filter.append(kvp("uyeler.telno",uyetclist.at(0))) ;
+                                        } catch (bsoncxx::exception &e) {
+                                            std::cout << "Line " << __LINE__ << "-> pullDoc." << "$pull :"<< e.what() << std::endl;
+                                        }
+
+
+                                        auto pullDoc = document{};
+
+                                        try {
+                                            pullDoc.append(kvp("$pull",make_document(kvp("uyeler",make_document(kvp("telno",uyetclist.at(0))))))) ;
+                                        } catch (bsoncxx::exception &e) {
+                                            std::cout << "Line " << __LINE__ << "-> pullDoc." << "$pull :"<< e.what() << std::endl;
+                                        }
+
+                                        try {
+
+                                            auto upt = this->getDb()->collection("Projeler").update_one(filter.view(),pullDoc.view());
+
+                                            if( upt.value().modified_count() )
+                                            {
+                                                this->initProjectList();
+                                            }else{
+                                                std::cout << "No Updated Project" << std::endl;
+                                            }
+
+                                        } catch (mongocxx::exception &e) {
+                                            std::cout << "Line: " << __LINE__ << "  ->" <<e.what() << std::endl;
+                                        }
+                                    });
+                                }
+
+
+                            }
+
+
+
+                        } catch (mongocxx::exception &e) {
+                            std::cout << "Line: " << __LINE__ << "  ->" <<e.what() << std::endl;
+                        }
+
+
+
+                        auto text =
+                                vLayout -> addWidget(cpp14::make_unique<WText>(
+                                                         std::string("Kişi Ekle+")),
+                                                     0,
+                                                     AlignmentFlag::Center |
+                                                     AlignmentFlag::Middle);
+                        text->setAttributeValue(
+                                    Style::style,
+                                    Style::font::size::s10px +
+                                    Style::color::color(
+                                        Style::color::White::AliceBlue) +
+                                    Style::font::weight::lighter);
+                        text->setMargin(WLength::Auto, AllSides);
+
+                        text->decorationStyle().setCursor(Cursor::PointingHand);
+
+                        text->clicked().connect([=](){
+
+
+
+                            auto mDialog = this->addChild(cpp14::make_unique<WDialog>("Projeye Üye Ekle"));
+
+
+                            Wt::WLabel *warnlabel =
+                                    mDialog->contents()->addWidget(Wt::cpp14::make_unique<Wt::WLabel>("<span style=\"background-color:#000000;color:#ffffff;\">"
+                                                                                                      "!Dikkat: Davet Ettiğiniz Kişinin Daha Önceden Üye Olması Gerekmektedir.</span>"));
+
+                            auto uyeTelno = mDialog->contents()->addWidget(cpp14::make_unique<WLineEdit>());
+                            uyeTelno->setPlaceholderText("Üye Olacak Kişinin Telefon Numarasını Giriniz");
+
+                            Wt::WLabel *uyari =
+                                    mDialog->contents()->addWidget(Wt::cpp14::make_unique<Wt::WLabel>(""));
+
+
+                            Wt::WPushButton *ok =
+                                    mDialog->footer()->addWidget(Wt::cpp14::make_unique<Wt::WPushButton>("Davetiye Gönder"));
+                            ok->setDefault(true);
+
+                            Wt::WPushButton *cancel =
+                                    mDialog->footer()->addWidget(Wt::cpp14::make_unique<Wt::WPushButton>("İptal"));
+                            mDialog->rejectWhenEscapePressed();
+
+
+                            ok->clicked().connect([=] {
+
+                                bool exist = false;
+
+                                if( uyeTelno->text().toUTF8().size() != 11 )
+                                {
+                                    uyari->setText("<span style=\"background-color:#B4009E;color:#ffffff;\">!Hatalı Telefon Numarası</span>");
+                                }else if (uyeTelno->text().toUTF8() == this->getCeptel() ) {
+                                    uyari->setText("<span style=\"background-color:#B4009E;color:#ffffff;\">!Kendi Projenize Üye Olamazsınız</span>");
+                                }else{
+
+
+                                    auto filter = document{};
+
+                                    try {
+                                        filter.append(kvp("ceptelkey",uyeTelno->text().toUTF8()));
+                                    } catch (bsoncxx::exception &e) {
+                                        std::cout << "UYE TCNO Error: " << e.what() << std::endl;
+                                    }
+
+                                    try {
+                                        auto count = this->getDb()->collection("Users").count(filter.view());
+
+                                        if( count )
+                                        {
+                                            exist = true;
+                                        }else{
+                                            uyari->setText("<span style=\"background-color:#B4009E;color:#ffffff;\">Böyle Bir Kişi Yok</span>");
+                                        }
+
+
+                                    } catch (mongocxx::exception &e) {
+
+                                    }
+
+
+                                    filter.clear();
+
+                                    try {
+                                        filter.append(kvp("_id",bsoncxx::oid(container->attributeValue(Style::dataoid).toUTF8().c_str())));
+                                    } catch (bsoncxx::exception &e) {
+
+                                    }
+
+                                    bool kisiZatenUye = false;
+                                    try {
+
+                                        auto val = this->getDb()->collection("Projeler").find_one(filter.view());
+
+                                        if( val )
+                                        {
+                                            auto array = val.value().view()["uyeler"].get_array().value;
+
+                                            int uyeCount = 0;
+
+                                            exist = true;
+                                            for( auto item : array )
+                                            {
+                                                try {
+                                                    auto value = item.get_document().view()["telno"].get_utf8().value.to_string();
+                                                    std::cout << "UYETELNO: " << value << " : " << uyeTelno->text().toUTF8() << std::endl;
+                                                    if( value == uyeTelno->text().toUTF8() )
+                                                    {
+                                                        kisiZatenUye = true;
+                                                        uyari->setText("<span style=\"background-color:#B4009E;color:#ffffff;\">Bu Kişi Zaten Üye</span>");
+                                                    }
+                                                } catch (bsoncxx::exception &e) {
+                                                    std::cout << "Line " << __LINE__ << "->in item.get_document().view() telno type is not " << "get_utf8() :"<< e.what() << std::endl;
+                                                }
+                                                uyeCount++;
+
+                                            }
+
+                                            if( uyeCount > 1 )
+                                            {
+                                                exist = false;
+                                            }
+                                        }
+
+
+                                    } catch (mongocxx::exception &e) {
+
+                                    }
+
+
+
+                                    if( exist && !kisiZatenUye )
+                                    {
+                                        filter.clear();
+
+                                        try {
+                                            filter.append(kvp("_id",bsoncxx::oid(container->attributeValue(Style::dataoid).toUTF8().c_str())));
+                                        } catch (bsoncxx::exception &e) {
+
+                                        }
+
+                                        auto uyeDoc = document{};
+
+                                        try {
+                                            uyeDoc.append(kvp("telno",uyeTelno->text().toUTF8()));
+                                        } catch (bsoncxx::exception &e) {
+
+                                        }
+
+                                        try {
+                                            uyeDoc.append(kvp("onay",bsoncxx::types::b_int32{0}));
+                                        } catch (bsoncxx::exception &e) {
+
+                                        }
+
+
+                                        auto pushDoc = document{};
+
+                                        try {
+                                            pushDoc.append(kvp("$push",make_document(kvp("uyeler",uyeDoc))));
+                                        } catch (bsoncxx::exception &e) {
+
+                                        }
+
+                                        try {
+                                            auto upt = this->getDb()->collection("Projeler").update_one(filter.view(),pushDoc.view());
+                                            if( upt )
+                                            {
+                                                if( upt.value().modified_count() )
+                                                {
+                                                    mDialog->accept();
+                                                }else{
+                                                    uyari->setText("<span style=\"background-color:#FA559E;color:#ffffff;\"><b>Davetiye Gönderilemedi</b></span>");
+                                                }
+                                            }
+                                        } catch (mongocxx::exception &e) {
+                                            uyari->setText("<span style=\"background-color:#B4009E;color:#ffffff;\">"+std::string(e.what())+"</span>");
+                                        }
+                                    }
+                                }
+
+
+
+                            });
+
+                            cancel->clicked().connect(mDialog, &Wt::WDialog::reject);
+
+                            mDialog->finished().connect([=] {
+                                if (mDialog->result() == Wt::DialogCode::Accepted)
+                                {
+
+                                    this->initProjectList();
+
+                                }else{
+                                    this->removeChild(mDialog);
+                                }
+                            });
+
+
+                            mDialog->show();
+
+                        });
+
+
+
+
+                    }
+                    // Eğer Üye Sayısı 2 Adet ise
+                    else {
+
+                        int i = 0;
+                        for( auto tcno : uyetclist )
                         {
                             auto imgContainer = vLayout->addWidget(cpp14::make_unique<WContainerWidget>(),0,AlignmentFlag::Middle);
-                            imgContainer->setAttributeValue(Style::style,Style::background::color::color(Style::color::Red::DarkSalmon));
+
+
+                            std::string accepted;
+
+                            if( uyeAcceptedlist.at(i) == 1 )
+                            {
+                                imgContainer->setAttributeValue(Style::style,Style::background::color::color(Style::color::Green::DarkGreen));
+                                accepted = " (+)";
+
+                            }else if( uyeAcceptedlist.at(i) == 0 ){
+                                imgContainer->setAttributeValue(Style::style,Style::background::color::color(Style::color::Grey::DarkGray));
+                                accepted = " (?)";
+                            }else{
+                                imgContainer->setAttributeValue(Style::style,Style::background::color::color(Style::color::Red::FireBrick));
+                                accepted = " (-)";
+                            }
+
                             imgContainer->setHeight(25);
+                            auto hLayout = imgContainer->setLayout(cpp14::make_unique<WHBoxLayout>());
+
+                            auto filter = bsoncxx::builder::basic::document{};
+
+
+                            try {
+
+                                filter.append(kvp("ceptelkey",uyetclist.at(i))) ;
+
+                            } catch (bsoncxx::exception &e) {
+                                std::cout << "Line: " << __LINE__ << " ->" <<e.what() << std::endl;
+                            }
+
+
+
+                            try {
+
+                                auto val = this->getDb()->collection("Users").find_one(filter.view());
+
+                                if( val )
+                                {
+                                    auto text = hLayout->addWidget(cpp14::make_unique<WText>(val.value().view()["adsoyad"].get_utf8().value.to_string() + accepted),
+                                            0,AlignmentFlag::Center|AlignmentFlag::Middle);
+
+                                    text->setAttributeValue(Style::style,Style::font::size::s12px+Style::font::weight::bold+
+                                                            Style::color::color(Style::color::White::AliceBlue));
+
+                                    if( uyeAcceptedlist.at(i) == 0 || uyeAcceptedlist.at(i) == -1 )
+                                    {
+                                        hLayout->addSpacing(5);
+
+
+                                        auto text1 = hLayout->addWidget(cpp14::make_unique<WText>("Davetiyeyi İptal Et"),
+                                                0,AlignmentFlag::Center|AlignmentFlag::Middle);
+
+                                        text1->setAttributeValue( Style::style , Style::font::size::s12px + Style::font::weight::bold +
+                                                                Style::color::color( Style::color::Grey::Black ) );
+
+                                        text1->decorationStyle().setCursor(Cursor::PointingHand);
+
+                                        text1->clicked().connect([=](){
+
+                                            auto filter = document{};
+
+
+
+                                            try {
+                                                filter.append(kvp("_id",bsoncxx::oid(container->attributeValue(Style::dataoid).toUTF8().c_str()))) ;
+                                            } catch (bsoncxx::exception &e) {
+                                                std::cout << "Line " << __LINE__ << "-> filter." << "_id :"<< e.what() << std::endl;
+                                            }
+
+                                            try {
+                                                filter.append(kvp("uyeler.telno",uyetclist.at(i))) ;
+                                            } catch (bsoncxx::exception &e) {
+                                                std::cout << "Line " << __LINE__ << "-> pullDoc." << "$pull :"<< e.what() << std::endl;
+                                            }
+
+                                            auto tcDoc = document{};
+
+                                            try {
+                                                tcDoc.append(kvp("telno",uyetclist.at(i))) ;
+                                            } catch (bsoncxx::exception &e) {
+                                                std::cout << "Line " << __LINE__ << "-> tcDoc." << "tcno :"<< e.what() << std::endl;
+                                            }
+
+                                            try {
+                                                tcDoc.append(kvp("onay",bsoncxx::types::b_int32{uyeAcceptedlist.at(i)})) ;
+                                            } catch (bsoncxx::exception &e) {
+                                                std::cout << "Line " << __LINE__ << "-> tcDoc." << "tcno :"<< e.what() << std::endl;
+                                            }
+
+                                            auto pullDoc = document{};
+
+                                            try {
+                                                pullDoc.append(kvp("$pull",make_document(kvp("uyeler",make_document(kvp("telno",uyetclist.at(i))))))) ;
+                                            } catch (bsoncxx::exception &e) {
+                                                std::cout << "Line " << __LINE__ << "-> pullDoc." << "$pull :"<< e.what() << std::endl;
+                                            }
+
+                                            try {
+
+                                                auto upt = this->getDb()->collection("Projeler").update_one(filter.view(),pullDoc.view());
+
+                                                if( upt.value().modified_count() )
+                                                {
+                                                    this->initProjectList();
+                                                }else{
+                                                    std::cout << "No Updated Project" << std::endl;
+                                                }
+
+                                            } catch (mongocxx::exception &e) {
+                                                std::cout << "Line: " << __LINE__ << "  ->" <<e.what() << std::endl;
+                                            }
+                                        });
+                                    }
+                                }
+
+
+                            } catch (mongocxx::exception &e) {
+                                std::cout << "Line: " << __LINE__ << "  ->" <<e.what() << std::endl;
+                            }
+
+                            i++;
                         }
+
+
+
+                        //                        {
+                        //                            auto imgContainer = vLayout->addWidget(cpp14::make_unique<WContainerWidget>(),0,AlignmentFlag::Middle);
+                        //                            imgContainer->setAttributeValue(Style::style,Style::background::color::color(Style::color::Red::Crimson));
+                        //                            imgContainer->setHeight(25);
+                        //                        }
+
+                        //                        {
+                        //                            auto imgContainer = vLayout->addWidget(cpp14::make_unique<WContainerWidget>(),0,AlignmentFlag::Middle);
+                        //                            imgContainer->setAttributeValue(Style::style,Style::background::color::color(Style::color::Red::DarkSalmon));
+                        //                            imgContainer->setHeight(25);
+                        //                        }
 
 
                     }
 
                 }
 
-                container->decorationStyle().setCursor(Cursor::PointingHand);
-
-                container->clicked().connect([=](){
 
 
-
-                    auto mDialog = this->addChild(cpp14::make_unique<WDialog>("Projeye Üye Ekle"));
-
-
-                    Wt::WLabel *warnlabel =
-                            mDialog->contents()->addWidget(Wt::cpp14::make_unique<Wt::WLabel>("<span style=\"background-color:#000000;color:#ffffff;\">"
-                                                                                              "!Dikkat: Davet Ettiğiniz Kişinin Daha Önceden Üye Olması Gerekmektedir.</span>"));
-
-                    auto uyeTelno = mDialog->contents()->addWidget(cpp14::make_unique<WLineEdit>());
-                    uyeTelno->setPlaceholderText("Üye Olacak Kişinin Telefon Numarasını Giriniz");
-
-                    Wt::WLabel *uyari =
-                            mDialog->contents()->addWidget(Wt::cpp14::make_unique<Wt::WLabel>(""));
-
-
-                    Wt::WPushButton *ok =
-                            mDialog->footer()->addWidget(Wt::cpp14::make_unique<Wt::WPushButton>("Davetiye Gönder"));
-                    ok->setDefault(true);
-
-                    Wt::WPushButton *cancel =
-                            mDialog->footer()->addWidget(Wt::cpp14::make_unique<Wt::WPushButton>("İptal"));
-                    mDialog->rejectWhenEscapePressed();
-
-
-                    ok->clicked().connect([=] {
-
-                        bool exist = false;
-                        if( uyeTelno->text().toUTF8().size() != 11 )
-                        {
-                            uyari->setText("<span style=\"background-color:#B4009E;color:#ffffff;\">!Hatalı Telefon Numarası</span>");
-                        }else{
-
-
-                            auto filter = document{};
-
-                            try {
-                                filter.append(kvp("ceptelkey",uyeTelno->text().toUTF8()));
-                            } catch (bsoncxx::exception &e) {
-                                std::cout << "UYE TCNO Error: " << e.what() << std::endl;
-                            }
-
-                            try {
-                                auto count = this->getDb()->collection("Users").count(filter.view());
-
-                                if( count )
-                                {
-                                    exist = true;
-                                }else{
-                                    uyari->setText("<span style=\"background-color:#B4009E;color:#ffffff;\">Böyle Bir Kişi Yok</span>");
-
-                                }
-
-
-                            } catch (mongocxx::exception &e) {
-
-                            }
-
-
-                            filter.clear();
-
-                            try {
-                                filter.append(kvp("_id",bsoncxx::oid(container->attributeValue(Style::dataoid).toUTF8().c_str())));
-                            } catch (bsoncxx::exception &e) {
-
-                            }
-
-                            try {
-
-                                auto val = this->getDb()->collection("Projeler").find_one(filter.view());
-
-                                if( val )
-                                {
-                                    auto array = val.value().view()["uyeler"].get_array().value;
-
-                                    int uyeCount = 0;
-
-                                    for( auto item : array )
-                                    {
-                                        uyeCount++;
-                                    }
-
-                                    if( uyeCount > 1 )
-                                    {
-                                        exist = false;
-                                    }
-                                }
-
-
-                            } catch (mongocxx::exception &e) {
-
-                            }
-
-
-
-                            if( exist )
-                            {
-                                filter.clear();
-
-                                try {
-                                    filter.append(kvp("_id",bsoncxx::oid(container->attributeValue(Style::dataoid).toUTF8().c_str())));
-                                } catch (bsoncxx::exception &e) {
-
-                                }
-
-                                auto uyeDoc = document{};
-
-                                try {
-                                    uyeDoc.append(kvp("telno",uyeTelno->text().toUTF8()));
-                                } catch (bsoncxx::exception &e) {
-
-                                }
-
-                                try {
-                                    uyeDoc.append(kvp("onay",bsoncxx::types::b_int32{0}));
-                                } catch (bsoncxx::exception &e) {
-
-                                }
-
-
-                                auto pushDoc = document{};
-
-                                try {
-                                    pushDoc.append(kvp("$push",make_document(kvp("uyeler",uyeDoc))));
-                                } catch (bsoncxx::exception &e) {
-
-                                }
-
-                                try {
-                                    auto upt = this->getDb()->collection("Projeler").update_one(filter.view(),pushDoc.view());
-                                    if( upt )
-                                    {
-                                        if( upt.value().modified_count() )
-                                        {
-                                            mDialog->accept();
-                                        }else{
-                                            uyari->setText("<span style=\"background-color:#FA559E;color:#ffffff;\"><b>Davetiye Gönderilemedi</b></span>");
-                                        }
-                                    }
-                                } catch (mongocxx::exception &e) {
-                                    uyari->setText("<span style=\"background-color:#B4009E;color:#ffffff;\">"+std::string(e.what())+"</span>");
-                                }
-                            }
-                        }
-                    });
-
-                    cancel->clicked().connect(mDialog, &Wt::WDialog::reject);
-
-                    mDialog->finished().connect([=] {
-                        if (mDialog->result() == Wt::DialogCode::Accepted)
-                        {
-
-
-
-                        }else{
-                            this->removeChild(mDialog);
-                        }
-                    });
-
-
-                    mDialog->show();
-
-                });
             }
         }
 

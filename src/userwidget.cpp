@@ -90,15 +90,6 @@ void UserWidget::initInfo()
         std::cout << "FOTO URL : " << fotourl << std::endl;
     }
 
-
-//    try {
-
-
-//    } catch (mongocxx::exception &e) {
-//        this->ShowMessage(std::string("Hata: ") + e.what() );
-//        fotoexist = false;
-//    }
-
     photo->setAttributeValue( Style::style , Style::background::url(fotourl) +
                               Style::background::size::contain +
                               Style::background::repeat::norepeat +
@@ -225,6 +216,105 @@ void UserWidget::initInfo()
         auto text = container->addWidget(cpp14::make_unique<WText>(this->getUniversite()));
         text->setAttributeValue(Style::style,Style::font::size::s14px+Style::color::color(Style::color::White::AliceBlue)+Style::font::weight::bold);
     }
+
+
+    {
+
+
+
+
+
+        {
+
+            auto kimlikContainer = rContainer->addWidget(cpp14::make_unique<WContainerWidget>());
+            kimlikContainer->setMargin(15,Side::Top|Side::Bottom);
+            kimlikContainer->addStyleClass( Bootstrap::Grid::col_full_12 );
+
+            auto text = kimlikContainer->addWidget(cpp14::make_unique<WText>("Öğrenci Belgesi Yükle"));
+            text->setAttributeValue(Style::style,Style::font::size::s10px+Style::color::color(Style::color::White::AliceBlue)+Style::font::weight::lighter);
+
+            Wt::WFileUpload *fu = kimlikContainer->addWidget(Wt::cpp14::make_unique<Wt::WFileUpload>());
+
+            fu->setProgressBar(Wt::cpp14::make_unique<Wt::WProgressBar>());
+
+
+
+            Wt::WText *out = rContainer->addWidget(Wt::cpp14::make_unique<Wt::WText>());
+
+
+
+            fu->changed().connect([=] {
+                fu->upload();
+                out->setText("Yükleniyor...");
+            });
+
+
+
+            fu->uploaded().connect([=] {
+                if( fu->uploadedFiles().size() )
+                {
+                    out->setText("Yükleme Tamamlandı");
+                    for( auto item : fu->uploadedFiles() )
+                    {
+                        std::string nameFilename = std::string("docroot/temp/")+item.clientFileName().c_str();
+                        std::cout << "File Renamed: " << QFile::rename(item.spoolFileName().c_str(), nameFilename.c_str() ) << std::endl;
+
+                        auto fotoid = this->uploadfile(nameFilename.c_str());
+
+                        auto filter = document{};
+
+                        try {
+                            filter.append(kvp("tcnokey",this->getTcno()));
+                        } catch (bsoncxx::exception &e) {
+                            this->ShowMessage(std::string("Hata tcno: ")+e.what());
+                            return;
+                        }
+
+                        auto setDoc = document{};
+
+                        try {
+                            setDoc.append(kvp("$set",make_document(kvp("kimlik",fotoid.get_oid()))));
+                        } catch (bsoncxx::exception &e) {
+                            this->ShowMessage(std::string("Hata fotooid: ")+e.what());
+                            return;
+                        }
+
+                        try {
+
+                            auto upt = this->getDb()->collection("Users").update_one(filter.view(),setDoc.view());
+
+                            if( upt )
+                            {
+                                if( upt.value().modified_count() )
+                                {
+                                    this->setFotoid(fotoid.get_oid().value.to_string());
+                                    this->initInfo();
+                                }
+                            }
+
+                        } catch (mongocxx::exception &e) {
+                            this->ShowMessage(std::string("Hata update: ")+e.what());
+                            return;
+                        }
+
+
+                    }
+                }
+            });
+
+            // React to a file upload problem.
+            fu->fileTooLarge().connect([=] {
+                out->setText("Dosya Fazla Büyük Dosya Boyutunu Düşürün");
+            });
+
+        }
+
+
+
+    }
+
+
+
 
     {
         auto container = rContainer->addWidget(cpp14::make_unique<WContainerWidget>());
