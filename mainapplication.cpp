@@ -72,6 +72,10 @@ MainApplication::MainApplication(const WEnvironment &env)
 
     header->Basvuru().connect(body,&Body::Body::BasvuruInit);
 
+    header->SartName().connect(body,&Body::Body::Sartnameinit);
+
+    header->Format().connect(body,&Body::Body::ProjeFormat);
+
     footer = root()->addWidget(cpp14::make_unique<Footer::Footer>());
 
     header->setZIndex(10);

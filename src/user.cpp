@@ -17,6 +17,7 @@ User::User(const User &user)
     this->setTcno(user.getTcno());
     this->setUniversite(user.getUniversite());
     this->setFotoid(user.getFotoid());
+    this->setKimlikoid(user.getKimlikoid());
 
 }
 
@@ -29,6 +30,7 @@ User::User(const User *user)
     this->setTcno(user->getTcno());
     this->setUniversite(user->getUniversite());
     this->setFotoid(user->getFotoid());
+    this->setKimlikoid(user->getKimlikoid());
 }
 
 User::User(bsoncxx::document::view userView)
@@ -39,6 +41,13 @@ User::User(bsoncxx::document::view userView)
     this->setPassword(userView["passwordkey"].get_utf8().value.to_string());
     this->setTcno(userView["tcnokey"].get_utf8().value.to_string());
     this->setUniversite(userView["universitekey"].get_utf8().value.to_string());
+
+    try {
+        this->setKimlikoid(userView["kimlik"].get_oid().value.to_string());
+    } catch (bsoncxx::exception &e) {
+        std::cout << "Foto Exract View Error: " << e.what() << std::endl;
+    }
+
     try {
         this->setFotoid(userView["foto"].get_oid().value.to_string());
     } catch (bsoncxx::exception &e) {
@@ -57,6 +66,12 @@ void User::setFromView(bsoncxx::document::view userView)
 
     try {
         this->setFotoid(userView["foto"].get_oid().value.to_string());
+    } catch (bsoncxx::exception &e) {
+        std::cout << "Foto Exract View Error: " << e.what() << std::endl;
+    }
+
+    try {
+        this->setKimlikoid(userView["kimlik"].get_oid().value.to_string());
     } catch (bsoncxx::exception &e) {
         std::cout << "Foto Exract View Error: " << e.what() << std::endl;
     }
@@ -201,6 +216,12 @@ bsoncxx::builder::basic::document User::getDocument()
     } catch (bsoncxx::exception &e) {
         std::cout << "passwordkey: " << e.what() << std::endl;
     }
+
+    try {
+        doc.append(kvp("kimlik",this->getKimlikOid()));
+    } catch (bsoncxx::exception &e) {
+        std::cout << "kimlik: " << e.what() << std::endl;
+    }
     return doc;
 }
 
@@ -231,6 +252,11 @@ bsoncxx::oid User::getFotoOid() const
     return bsoncxx::oid(this->getFotoid());
 }
 
+bsoncxx::oid User::getKimlikOid() const
+{
+    return bsoncxx::oid(this->getKimlikoid());
+}
+
 std::string User::getFotoid() const
 {
     return fotoid;
@@ -239,5 +265,15 @@ std::string User::getFotoid() const
 void User::setFotoid(const std::string &value)
 {
     fotoid = value;
+}
+
+std::string User::getKimlikoid() const
+{
+    return kimlikoid;
+}
+
+void User::setKimlikoid(const std::string &value)
+{
+    kimlikoid = value;
 }
 

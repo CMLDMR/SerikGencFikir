@@ -199,6 +199,18 @@ void Body::Body::gencFikirInit()
             img->setHeight(75);
             img->setAttributeValue(Style::style,Style::background::url("icon/icons/5.jpeg")+Style::background::repeat::norepeat+Style::background::size::contain);
         }
+        {
+            auto img = layout->addWidget(cpp14::make_unique<WContainerWidget>());
+            img->setWidth(75);
+            img->setHeight(75);
+            img->setAttributeValue(Style::style,Style::background::url("icon/icons/6.jpeg")+Style::background::repeat::norepeat+Style::background::size::contain);
+        }
+        {
+            auto img = layout->addWidget(cpp14::make_unique<WContainerWidget>());
+            img->setWidth(75);
+            img->setHeight(75);
+            img->setAttributeValue(Style::style,Style::background::url("icon/icons/7.jpeg")+Style::background::repeat::norepeat+Style::background::size::contain);
+        }
         layout->addStretch(1);
 
 
@@ -221,6 +233,85 @@ void Body::Body::BasvuruInit()
 
         container->Logined().connect(this,&Body::Body::initUserWidget);
     }
+}
+
+void Body::Body::Sartnameinit()
+{
+
+    mMainContainer->clear();
+
+    auto  row = mMainContainer->addWidget(cpp14::make_unique<WContainerWidget>());
+    row->addStyleClass(Bootstrap::Grid::row);
+
+    {
+        auto container = row->addWidget(cpp14::make_unique<WContainerWidget>());
+        container->setMargin(50,Side::Bottom|Side::Top);
+        container->addStyleClass(Bootstrap::Grid::col_full_12);
+
+        QFile file("docroot/document/document.txt");
+
+        if( file.open(QIODevice::ReadOnly) )
+        {
+            QString str = QString::fromUtf8(file.readAll());
+
+
+            std::cout << "Şartname init: " << str.count(">\n") << std::endl;
+
+            while( str.count("\n") )
+            {
+                std::cout << str.count("\n") << " - " << str.indexOf("\n") << std::endl;
+                str.remove(str.indexOf("\n"),2);
+            }
+
+            auto text = container->addWidget(cpp14::make_unique<WText>(str.toStdString().c_str(),TextFormat::UnsafeXHTML));
+            text->setAttributeValue(Style::style,Style::font::size::s28px+Style::color::color(Style::color::White::AliceBlue));
+
+            file.close();
+        }else{
+            auto text = container->addWidget(cpp14::make_unique<WText>("Dosya Açılamadı. Lütfen Daha Sonra Tekrar Deneyiniz!"));
+            text->setAttributeValue(Style::style,Style::font::size::s28px+Style::color::color(Style::color::White::AliceBlue));
+        }
+
+
+    }
+
+}
+
+void Body::Body::ProjeFormat()
+{
+
+    mMainContainer->clear();
+
+    auto  row = mMainContainer->addWidget(cpp14::make_unique<WContainerWidget>());
+    row->addStyleClass(Bootstrap::Grid::row);
+
+    auto container = row->addWidget(cpp14::make_unique<WContainerWidget>());
+    container->setMargin(225,Side::Bottom|Side::Top);
+    container->addStyleClass(Bootstrap::Grid::col_full_12);
+    container->setHeight(225);
+
+    container->setContentAlignment(AlignmentFlag::Center);
+
+    Wt::WLink link = Wt::WLink("document/format.doc");
+    link.setTarget(Wt::LinkTarget::NewWindow);
+
+    std::unique_ptr<Wt::WAnchor> anchor =
+            Wt::cpp14::make_unique<Wt::WAnchor>(link,
+                            "<b>Proje Formatını İndir</b>");
+
+    auto ccontainer = container->addWidget(cpp14::make_unique<WContainerWidget>());
+    ccontainer->setWidth(250);
+    ccontainer->setHeight(50);
+
+    auto vLayout = ccontainer->setLayout(cpp14::make_unique<WVBoxLayout>());
+
+    vLayout->addWidget(std::move(anchor),0,AlignmentFlag::Middle|AlignmentFlag::Center);
+
+    ccontainer->setPadding(5,AllSides);
+
+    ccontainer->setAttributeValue(Style::style,Style::Border::border("2px solid white")+
+                                 Style::Border::borderRardius("15","15","15","15"));
+
 }
 
 void Body::Body::initUserWidget(bsoncxx::document::view userView)

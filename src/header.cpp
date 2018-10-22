@@ -61,10 +61,15 @@ Header::Header::Header()
         giris->triggered().connect([&](){
             this->_gencfikir.emit(NoClass());
         });
-        leftMenu_->addItem("Ödüller", Wt::cpp14::make_unique<Wt::WText>("Layout contents"))
-                ->setLink(Wt::WLink(Wt::LinkType::InternalPath, "/?_=layout"));
-        leftMenu_->addItem("Yarışma Şartnamesi");
-        leftMenu_->addItem("Proje Formatı");
+
+        auto sartname = leftMenu_->addItem("Ödüller & Şartname");
+        sartname->clicked().connect([&](){
+            _SartName.emit(NoClass());
+        });
+        auto format = leftMenu_->addItem("Proje Formatı");
+        format->clicked().connect([&](){
+            _Format.emit(NoClass());
+        });
 
 
         // Setup a Right-aligned menu.

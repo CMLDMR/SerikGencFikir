@@ -19,6 +19,10 @@ public:
 
     void BasvuruInit();
 
+    void Sartnameinit();
+
+    void ProjeFormat();
+
 
     void initUserWidget(bsoncxx::document::view view);
 

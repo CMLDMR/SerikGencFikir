@@ -82,10 +82,10 @@ void LLoginWidget::initLoginPage()
             giris->clicked().connect(this,&LLoginWidget::Login);
         }
 
-        {
-            auto unuttum = vLayout->addWidget(cpp14::make_unique<WPushButton>("Şifremi Unuttum"),0,AlignmentFlag::Center);
-            unuttum->addStyleClass(Bootstrap::Button::Success);
-        }
+//        {
+//            auto unuttum = vLayout->addWidget(cpp14::make_unique<WPushButton>("Şifremi Unuttum"),0,AlignmentFlag::Center);
+//            unuttum->addStyleClass(Bootstrap::Button::Success);
+//        }
 
         {
             auto uye = vLayout->addWidget(cpp14::make_unique<WPushButton>("Yeni Üye Ol"),0,AlignmentFlag::Center);

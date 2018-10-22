@@ -66,6 +66,8 @@ public:
 
     bsoncxx::oid getFotoOid() const;
 
+    bsoncxx::oid getKimlikOid() const;
+
 
 
 
@@ -86,6 +88,9 @@ public:
     std::string getFotoid() const;
     void setFotoid(const std::string &value);
 
+    std::string getKimlikoid() const;
+    void setKimlikoid(const std::string &value);
+
 private:
     std::string adsoyad;
     std::string ceptel;
@@ -94,6 +99,8 @@ private:
     std::string tcno;
     std::string password;
     std::string fotoid;
+
+    std::string kimlikoid;
 
 
     document userDoc;
